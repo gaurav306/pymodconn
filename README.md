@@ -1,5 +1,7 @@
 # mod_seq2seq_conn
 
+[![image](https://img.shields.io/pypi/v/mod_seq2seq_conn?style=plastic)](https://pypi.org/project/mod-seq2seq-conn/)
+
 mod_seq2seq_conn = modular sequence to sequence control oriented neural networks
 
 ## Instructions
@@ -21,6 +23,5 @@ configs = get_configs('config_model.yaml')
 model = ModelClass_tfp(configs_data, time_dt)
 ```
 
-
-
+## Credits
 packaging instructions from https://towardsdatascience.com/how-to-package-your-python-code-df5a7739ab2e
