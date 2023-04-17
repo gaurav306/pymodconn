@@ -11,5 +11,5 @@ pip install mod_seq2seq_conn
 ```
 
 2. Usage:
+Download congifuration file from tests_usage\ in the github repository https://github.com/gaurav306/mod_seq2seq_conn
 
-check tests\ in the github repository
