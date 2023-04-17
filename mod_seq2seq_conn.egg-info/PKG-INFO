@@ -1,0 +1,29 @@
+Metadata-Version: 2.1
+Name: mod-seq2seq-conn
+Version: 0.0.1
+Summary: Develops sequence to sequence control oriented neural networks in a highly modular way.
+Home-page: https://github.com/gaurav306/mod_seq2seq_conn
+Author: Gaurav Chaudhary
+Author-email: gaurav.chaudhary@ntnu.no
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# mod_seq2seq_conn
+
+mod_seq2seq_conn = modular sequence to sequence control oriented neural networks
+
+## Instructions
+
+1. Install:
+
+```
+pip install mod_seq2seq_conn
+```
+
+2. Usage:
+Download congifuration file from tests_usage\ in the github repository https://github.com/gaurav306/mod_seq2seq_conn
+
