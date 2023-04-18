@@ -1,0 +1,55 @@
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ encoder_past_inputs (InputLaye  [(None, 672, 31)]   0           []                               
+ r)                                                                                               
+                                                                                                  
+ encoder_future_1_inputs (Input  [(None, 96, 15)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ dense (Dense)                  (None, 672, 64)      2048        ['encoder_past_inputs[0][0]']    
+                                                                                                  
+ dense_1 (Dense)                (None, 96, 64)       1024        ['encoder_future_1_inputs[0][0]']
+                                                                                                  
+ dropout (Dropout)              (None, 672, 64)      0           ['dense[0][0]']                  
+                                                                                                  
+ dropout_1 (Dropout)            (None, 96, 64)       0           ['dense_1[0][0]']                
+                                                                                                  
+ bidirectional (Bidirectional)  [(None, 672, 128),   49920       ['dropout[0][0]']                
+                                 (None, 64),                                                      
+                                 (None, 64)]                                                      
+                                                                                                  
+ bidirectional_1 (Bidirectional  [(None, 96, 128),   49920       ['dropout_1[0][0]',              
+ )                               (None, 64),                      'bidirectional[0][1]',          
+                                 (None, 64)]                      'bidirectional[0][2]']          
+                                                                                                  
+ concatenate (Concatenate)      (None, 128)          0           ['bidirectional[0][1]',          
+                                                                  'bidirectional_1[0][1]',        
+                                                                  'bidirectional[0][2]',          
+                                                                  'bidirectional_1[0][2]']        
+                                                                                                  
+ decoder_future_1_crossMHA (Mul  (None, 96, 128)     127848      ['bidirectional_1[0][0]',        
+ tiHeadAttention)                                                 'bidirectional[0][0]',          
+                                                                  'bidirectional[0][0]']          
+                                                                                                  
+ dense_2 (Dense)                (None, 64)           8256        ['concatenate[0][0]',            
+                                                                  'concatenate[1][0]']            
+                                                                                                  
+ bidirectional_2 (Bidirectional  [(None, 96, 128),   74496       ['decoder_future_1_crossMHA[0][0]
+ )                               (None, 64),                     ',                               
+                                 (None, 64)]                      'dense_2[0][0]',                
+                                                                  'dense_2[1][0]']                
+                                                                                                  
+ time_distributed (TimeDistribu  (None, 96, 1)       129         ['bidirectional_2[0][0]']        
+ ted)                                                                                             
+                                                                                                  
+ dense_4 (Dense)                (None, 96, 7)        14          ['time_distributed[0][0]']       
+                                                                                                  
+ reshape (Reshape)              (None, 96, 1, 7)     0           ['dense_4[0][0]']                
+                                                                                                  
+==================================================================================================
+Total params: 313,655
+Trainable params: 313,655
+Non-trainable params: 0
+__________________________________________________________________________________________________
