@@ -5,22 +5,16 @@ from pymodconn.utils_layers import *
 K = tf.keras.backend
 
 
-class Input_encoder_MHA_RNN():
-	def __init__(self, cfg, location, num):
+class Encoder_class():
+	def __init__(self, cfg, enc_or_dec_number):
 		self.cfg = cfg
-		self.location = location
-		self.num = num
-		if self.location == "encoder_past":
-			self.IF_FFN = cfg['IFFFN']
-			self.IF_RNN = cfg['IFRNN_input']
-			self.IF_MHA = cfg['IFSELF_MHA']
-			self.IF_MASK = 0
-		elif self.location == "encoder_future":
-			self.IF_FFN = cfg['IFFFN']
-			self.IF_RNN = cfg['IFRNN_output']
-			self.IF_MHA = cfg['IFCASUAL_MHA']
-			self.IF_MASK = cfg['dec_attn_mask']
-			
+		self.enc_or_dec_number = enc_or_dec_number
+
+		self.IF_RNN = cfg['IFRNN_input']
+		self.IF_MHA = cfg['IFSELF_MHA']
+		self.MHA_DEPTH = cfg['SELF_MHA_DEPTH']
+		self.IF_MASK = 0
+	
 		self.future_data_col = cfg['future_data_col']
 		self.n_past = cfg['n_past']
 		self.n_features_input = cfg['n_features_input']
@@ -33,163 +27,51 @@ class Input_encoder_MHA_RNN():
 
 	def __call__(self, input, init_states=None):
 		
-		encoder_past_inputs1 = tf.keras.layers.Dense(
+		encoder_input = tf.keras.layers.Dense(
 			self.all_layers_neurons)(input)
 
-		encoder_past_inputs1 = tf.keras.layers.Dropout(
-			self.all_layers_dropout/5)(encoder_past_inputs1)
-		output_cell = encoder_past_inputs1
+		encoder_input = tf.keras.layers.Dropout(
+			self.all_layers_dropout/5)(encoder_input)
+		output_cell = encoder_input
 
 		if self.MHA_RNN == 0:
 			input_cell = output_cell
-			# encoder BiLSTM
-			if self.IF_RNN:
-				
-				encoder1 = rnn_unit(self.cfg,
-									rnn_location=self.location,
-									num=self.num)
-				encoder_outputs1 = encoder1(
-					input_cell,
-					init_states=init_states)
-				output_cell = encoder_outputs1[0]
-				encoder_outputs1_allstates = encoder_outputs1[1:]
-
-				output_cell, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
-									hidden_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_cell, output_cell)
-
-				output_states = encoder_outputs1_allstates
-				
-				if self.cfg['IF_GLU']:
-					#GRN
-					output_cell, _ = GRN_layer(
-										hidden_layer_size=self.all_layers_neurons,
-										output_size=self.all_layers_neurons,
-										dropout_rate=self.all_layers_dropout,
-										use_time_distributed=True,
-										activation_layer='elu')(output_cell)
-				
-			else:
-				output_cell = input_cell
-				output_states = None
-
-		input_cell = output_cell
-		if self.IF_MHA:
-			if self.IF_MASK:
-				causal_mask = get_causal_attention_mask()(input_cell)
-
-				encoder_mha = tf.keras.layers.MultiHeadAttention(
-					num_heads=self.mha_head,
-					key_dim=self.n_features_input,
-					value_dim=self.n_features_input,
-					name=self.location+'_'+str(self.num) + '_casualMHA')
-
-				output_cell = encoder_mha(query=input_cell,
-										  key=input_cell,
-										  value=input_cell,
-										  attention_mask=causal_mask,
-										  training=True)
-			else:
-				encoder_mha = tf.keras.layers.MultiHeadAttention(
-					num_heads=self.mha_head,
-					key_dim=self.n_features_input,
-					value_dim=self.n_features_input,
-					name=self.location+'_'+str(self.num) + '_selfMHA')
-				
-				output_cell = encoder_mha(query=input_cell,
-										  key=input_cell,
-										  value=input_cell,
-										  training=True)
-
-			output_cell, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
-									hidden_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_cell, output_cell)
-			if self.cfg['IF_GLU']:
-				#GRN
-				output_cell, _ = GRN_layer(
-									hidden_layer_size=self.all_layers_neurons,
-									output_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=True,
-									activation_layer='elu')(output_cell)
-
-		else:
-			output_cell = input_cell
-
-		input_cell = output_cell
-		# encoder feed forward network
-		if self.IF_FFN and self.IF_MHA:
-			output_cell = FeedForward(
-				self.all_layers_neurons, self.all_layers_dropout/2)(input_cell)
+			rnn_block = RNN_block_class(self.cfg['IFRNN_input'],
+										self.cfg,
+										'encoder_input',
+										self.enc_or_dec_number)
 			
-			output_cell, _ = GLU_with_ADDNORM(
-							IF_GLU=self.cfg['IF_GLU'],
-							IF_ADDNORM=self.cfg['IF_ADDNORM'],
-							hidden_layer_size=self.all_layers_neurons,
-							dropout_rate=self.all_layers_dropout,
-							use_time_distributed=False,
-							activation=None)(input_cell, output_cell)
-		else:
-			output_cell = input_cell
+			output_cell, output_states = rnn_block(input_cell, init_states=init_states)
+
+		input_cell = output_cell
+		for i in range(self.MHA_DEPTH):
+			self_mha = MHA_block_class(self.IF_MHA,
+								self.cfg,
+								'encoder',
+								self.enc_or_dec_number, 
+								'self',
+								str(i+1))
+			
+			output_cell = self_mha(input_cell, input_cell)
+			input_cell = output_cell
 
 		if self.MHA_RNN == 1:
 			input_cell = output_cell
-			# encoder BiLSTM
-			if self.IF_RNN:
-				encoder1 = rnn_unit(self.cfg,
-									rnn_location=self.location,
-									num=self.num)
-				encoder_outputs1 = encoder1(
-					input_cell,
-					init_states=init_states)
-				output_cell = encoder_outputs1[0]
-				encoder_outputs1_allstates = encoder_outputs1[1:]
-
-				output_cell, _ = GLU_with_ADDNORM(
-							IF_GLU=self.cfg['IF_GLU'],
-							IF_ADDNORM=self.cfg['IF_ADDNORM'],
-							hidden_layer_size=self.all_layers_neurons,
-							dropout_rate=self.all_layers_dropout,
-							use_time_distributed=False,
-							activation=None)(input_cell, output_cell)
-
-				output_states = encoder_outputs1_allstates
-			else:
-				output_cell = input_cell
-				output_states = None
+			rnn_block = RNN_block_class(self.cfg['IFRNN_input'],
+										self.cfg,
+										'encoder_input',
+										self.enc_or_dec_number)
+			
+			output_cell, output_states = rnn_block(input_cell, init_states=init_states)
 
 		output = output_cell
 		return output, output_states
 
 
-class Output_decoder_crossMHA_RNN():
-	def __init__(self, cfg, location, num):
+class Decoder_class():
+	def __init__(self, cfg, enc_or_dec_number):
 		self.cfg = cfg
-		self.location = location
-		self.num = num
-		if self.location == "encoder_past":
-			self.IF_FFN = cfg['IFFFN']
-			self.IF_RNN = cfg['IFRNN_input']
-			self.IF_MHA = cfg['IFSELF_MHA']
-			self.IF_MASK = 0
-		elif self.location == "encoder_future":
-			self.IF_FFN = cfg['IFFFN']
-			self.IF_RNN = cfg['IFRNN_output']
-			self.IF_MHA = cfg['IFCASUAL_MHA']
-			self.IF_MASK = cfg['dec_attn_mask']
-		elif self.location == "decoder_future":
-			self.IF_FFN = cfg['IFFFN']
-			self.IF_RNN = cfg['IFRNN_output']
-			self.IF_MHA = cfg['IFCROSS_MHA']
-			self.IF_MASK = 0
+		self.enc_or_dec_number = enc_or_dec_number
 
 		self.future_data_col = cfg['future_data_col']
 		self.n_past = cfg['n_past']
@@ -200,192 +82,192 @@ class Output_decoder_crossMHA_RNN():
 		self.n_future = cfg['n_future']
 		self.n_features_output = cfg['n_features_output']
 
-	def __call__(self, input_qk, input_v, init_states=None):
+		self.merge_states_units = int(
+			self.all_layers_neurons/self.cfg['input_enc_rnn_depth'])
+		self.merge_states_units = 8 * int(self.merge_states_units/8)		
+
+	def __call__(self, input, input_vk, init_states=None):
 		
-		skip_connection = input_qk
+		encoder_input = tf.keras.layers.Dense(
+			self.all_layers_neurons)(input)
 
-		# decoder multi head attention
-		if self.IF_MHA:
-			decoder_mha = tf.keras.layers.MultiHeadAttention(
-				num_heads=self.mha_head,
-				key_dim=self.n_features_input,
-				value_dim=self.n_features_input,
-				name=self.location+'_'+str(self.num) + '_crossMHA')
-			decoder_attn_output = decoder_mha(query=input_qk,
-											  key=input_v,
-											  value=input_v,
-											  training=True)
+		encoder_input = tf.keras.layers.Dropout(
+			self.all_layers_dropout/5)(encoder_input)
+		output_cell = encoder_input
 
-			decoder_attn_output, _ = GLU_with_ADDNORM(
-						IF_GLU=self.cfg['IF_GLU'],
-						IF_ADDNORM=self.cfg['IF_ADDNORM'],
-						hidden_layer_size=self.all_layers_neurons,
-						dropout_rate=self.all_layers_dropout,
-						use_time_distributed=False,
-						activation=None)(input_qk, decoder_attn_output)
+		input_cell = output_cell
+		rnn_block_dec_in = RNN_block_class(self.cfg['IFRNN_input'],
+									self.cfg,
+									"decoder_input",
+									self.enc_or_dec_number)
+		
+		output_cell, output_states = rnn_block_dec_in(input_cell, init_states=init_states)
 
-			if self.cfg['IF_GLU']:
-				#GRN
-				decoder_attn_output, _ = GRN_layer(
-									hidden_layer_size=self.all_layers_neurons,
-									output_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=True,
-									activation_layer='elu')(decoder_attn_output)
+		input_cell = output_cell
 
+		for i in range(self.cfg['CASUAL_MHA_DEPTH']):
+			casual_mha = MHA_block_class(self.cfg['IFCASUAL_MHA'],
+									self.cfg,
+									'decoder',
+									self.enc_or_dec_number, 
+									'casual',
+									str(i+1))        #<------------------here
+			output_cell = casual_mha(input_cell, input_cell)
+		
+			# decoder multi head attention
+			skip_connection = output_cell
+			input_cell = output_cell
+			cross_mha = MHA_block_class(self.cfg['IFCASUAL_MHA'],
+									self.cfg,
+									'decoder',
+									self.enc_or_dec_number, 
+									'cross',
+									str(i+1))        #<------------------here
+			output_cell = cross_mha(input_cell, input_vk)
+			input_cell = output_cell
+
+
+		input_cell = output_cell
+		rnn_block_dec_out = RNN_block_class(self.cfg['IFRNN_output'],
+											self.cfg,
+											"decoder_output",
+											self.enc_or_dec_number)
+		if init_states == None or init_states == [] or output_states == None or output_states == []:
+			merged_states = output_states
 		else:
-			decoder_attn_output = input_qk
+			merged_states =  MERGE_STATES(self.merge_states_units)(init_states, output_states)
+		
+		output_cell, output_states = rnn_block_dec_out(input_cell, init_states = merged_states)
 
-		# decoder feed forward network
-		if self.IF_FFN and self.IF_MHA:
-			decoder_ffn_output = FeedForward(
-				self.all_layers_neurons, self.all_layers_dropout/2)(decoder_attn_output)
-
-			decoder_ffn_output, _ = GLU_with_ADDNORM(
-						IF_GLU=self.cfg['IF_GLU'],
-						IF_ADDNORM=self.cfg['IF_ADDNORM'],
-						hidden_layer_size=self.all_layers_neurons,
-						dropout_rate=self.all_layers_dropout,
-						use_time_distributed=False,
-						activation=None)(decoder_attn_output, decoder_ffn_output)			
-		else:
-			decoder_ffn_output = decoder_attn_output
-
-		# decoder BiLSTM
-		if self.IF_RNN:
-			decoder1 = rnn_unit(
-				self.cfg,
-				rnn_location=self.location,
-				num=self.num)
-			decoder_outputs1 = decoder1(
-				decoder_ffn_output,
-				init_states=init_states)
-
-			if self.cfg['IF_GLU']:
-				#GRN
-				decoder_outputs1, _ = GRN_layer(
-									hidden_layer_size=self.all_layers_neurons,
-									output_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=True,
-									activation_layer='elu')(decoder_outputs1[0])
-			else:
-				decoder_outputs1 = decoder_outputs1[0]		
-
-			decoder_outputs1, _ = GLU_with_ADDNORM(
-						IF_GLU=self.cfg['IF_GLU'],
-						IF_ADDNORM=self.cfg['IF_ADDNORM'],
-						hidden_layer_size=self.all_layers_neurons,
-						dropout_rate=self.all_layers_dropout,
-						use_time_distributed=False,
-						activation=None)(decoder_ffn_output, decoder_outputs1)	
-		else:
-			decoder_outputs1 = decoder_ffn_output
 
 		# skip connection
-		decoder_outputs1, _ = GLU_with_ADDNORM(
+		output_cell, _ = GLU_with_ADDNORM(
 						IF_GLU=self.cfg['IF_GLU'],
 						IF_ADDNORM=self.cfg['IF_ADDNORM'],
 						hidden_layer_size=self.all_layers_neurons,
 						dropout_rate=self.all_layers_dropout,
 						use_time_distributed=False,
-						activation=None)(skip_connection, decoder_outputs1)
+						activation=None)(skip_connection, output_cell)
 
 		# decoder_future output
-		decoder_outputs2 = tf.keras.layers.TimeDistributed(
-			tf.keras.layers.Dense(self.n_features_output))(decoder_outputs1)
+		output_cell = tf.keras.layers.TimeDistributed(
+			tf.keras.layers.Dense(self.n_features_output))(output_cell)
 
-		output = decoder_outputs2
-
-		return output
+		return output_cell
 
 
 
-
-class rnn_unit():
-	def __init__(self, cfg, rnn_location, num):
-
-		self.all_layers_dropout = cfg['all_layers_dropout']
-		self.rnn_type = cfg['rnn_type']
-		self.input_enc_rnn_depth = cfg['input_enc_rnn_depth']
-		self.input_enc_rnn_bi = cfg['input_enc_rnn_bi']
-		self.all_layers_neurons = cfg['all_layers_neurons']
-		self.all_layers_neurons_rnn = int(
-			self.all_layers_neurons/self.input_enc_rnn_depth)
-		self.all_layers_neurons_rnn = 8 * int(self.all_layers_neurons_rnn/8)
-		self.all_layers_dropout = cfg['all_layers_dropout']
-		self.rnn_location = rnn_location
+class MHA_block_class():
+	def __init__(self, IF_MHA, cfg, enc_or_dec, enc_or_dec_number, self_or_casual_or_crossMHA, mha_depth_index):
 		self.cfg = cfg
-		self.num = num
+		self.enc_or_dec = enc_or_dec
+		self.enc_or_dec_number = enc_or_dec_number
+		self.IF_MHA = IF_MHA
+		self.mha_depth_index = mha_depth_index
+		self.self_or_casual_or_crossMHA = self_or_casual_or_crossMHA
+		
+		self.mha_head = self.cfg['mha_head']
+		self.n_features_input = self.cfg['n_features_input']
+		self.all_layers_neurons = self.cfg['all_layers_neurons']	
+		self.all_layers_dropout = self.cfg['all_layers_dropout']
+		self.IF_GRN = self.cfg['IF_GRN']
+		self.IF_GLU = self.cfg['IF_GLU']
+		self.IF_ADDNORM = self.cfg['IF_ADDNORM']
+		self.dec_attn_mask = self.cfg['dec_attn_mask']
 
-	def __call__(self, input_to_layers, init_states=None):
-		if self.input_enc_rnn_depth == 1:
-			return self.single_rnn_layer(x_input=input_to_layers, init_states=init_states, mid_layer=False, layername_prefix='Only_')
-		else:
-			x = self.single_rnn_layer(x_input=input_to_layers, init_states=init_states,
-									  mid_layer=True, layername_prefix='First_')  # change
-						
-			x, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
-									hidden_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_to_layers, x)
+
+	def __call__(self, input_q, input_kv):
+		if self.IF_MHA:
 			
-			for i in range(0, self.input_enc_rnn_depth-2):
-				x = self.single_rnn_layer(
-					x_input=x, init_states=init_states, mid_layer=True, layername_prefix='Mid_%s_' % (i+1))
-				
-				x, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
+			self.mha_layer_name = self.enc_or_dec + '_' + str(self.enc_or_dec_number) + '_'+ str(self.self_or_casual_or_crossMHA) + 'MHA-' + str(self.mha_depth_index)
+
+			if self.self_or_casual_or_crossMHA == 'casual' and self.dec_attn_mask == 1:
+				causal_mask = get_causal_attention_mask()(input_q)
+			else:
+				causal_mask = None
+			
+			encoder_mha = tf.keras.layers.MultiHeadAttention(
+								num_heads = self.mha_head,
+								key_dim = self.n_features_input,
+								value_dim = self.n_features_input,
+								name=self.mha_layer_name)	
+
+			output_cell = encoder_mha(query=input_q,
+										key=input_kv,
+										value=input_kv,
+										attention_mask=causal_mask,
+										training=True)
+			
+			output_cell, _ = GLU_with_ADDNORM(
+									IF_GLU = self.IF_GLU,
+									IF_ADDNORM = self.IF_ADDNORM,
+									hidden_layer_size = self.all_layers_neurons,
+									dropout_rate = self.all_layers_dropout,
+									use_time_distributed = False,
+									activation = None)(input_q, output_cell)
+			
+			output_cell, _ = GRN_layer(
+								IF_GRN = self.IF_GRN,
+								hidden_layer_size = self.all_layers_neurons,
+								output_size = self.all_layers_neurons,
+								dropout_rate = self.all_layers_dropout,
+								use_time_distributed = True,
+								activation_layer = 'elu')(output_cell)					
+			
+			return output_cell
+		
+		else:
+			return input_q
+
+
+
+class RNN_block_class():
+	def __init__(self, IF_RNN, cfg, location, num):
+		self.IF_RNN = IF_RNN
+		self.cfg = cfg
+		self.location = location
+		self.num = num
+		self.n_features_input = self.cfg['n_features_input']
+		self.all_layers_neurons = self.cfg['all_layers_neurons']	
+		self.all_layers_dropout = self.cfg['all_layers_dropout']
+		self.IF_GRN = self.cfg['IF_GRN']
+		self.IF_GLU = self.cfg['IF_GLU']
+		self.IF_ADDNORM = self.cfg['IF_ADDNORM']
+	
+	def __call__(self, input_cell, init_states=None):
+		if self.IF_RNN:
+			rnn = rnn_unit(self.cfg,
+						rnn_location=self.location,
+						num=self.num)
+			
+			rnn_outputs1 = rnn(input_cell,
+								init_states=init_states)
+			
+			output_cell = rnn_outputs1[0]
+			
+			rnn_outputs1_allstates = rnn_outputs1[1:]
+
+			output_cell, _ = GLU_with_ADDNORM(
+								IF_GLU=self.IF_GLU,
+								IF_ADDNORM=self.IF_ADDNORM,
+								hidden_layer_size=self.all_layers_neurons,
+								dropout_rate=self.all_layers_dropout,
+								use_time_distributed=False,
+								activation=None)(input_cell, output_cell)
+
+			output_states = rnn_outputs1_allstates
+			
+			if self.cfg['IF_GLU']:
+				#GRN
+				output_cell, _ = GRN_layer(
+									IF_GRN = self.IF_GRN,
 									hidden_layer_size=self.all_layers_neurons,
+									output_size=self.all_layers_neurons,
 									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_to_layers, x)
-
-			return self.single_rnn_layer(x_input=x, init_states=init_states, mid_layer=False, layername_prefix='Last_')
-
-	def single_rnn_layer(self, x_input, init_states, mid_layer=False, layername_prefix=None):
-		if self.rnn_type == "LSTM":
-			RNN_type = tf.keras.layers.LSTM
-		elif self.rnn_type == "GRU":
-			RNN_type = tf.keras.layers.GRU
-		elif self.rnn_type == "RNN":
-			RNN_type = tf.keras.layers.SimpleRNN
-
-		if self.rnn_location == "encoder_past":
-			self.init_state = None
-		elif self.rnn_location == "encoder_future" or self.rnn_location == "decoder_future":
-			self.init_state = init_states
-
-		if mid_layer:
-			ret_seq = True
-			ret_state = False
+									use_time_distributed=True,
+									activation_layer='elu')(output_cell)
 		else:
-			ret_seq = True
-			ret_state = True
-
-		if self.input_enc_rnn_bi:
-			self.layername = layername_prefix + self.rnn_location + \
-				'_' + str(self.num) + '_bi' + self.rnn_type
-		else:
-			self.layername = layername_prefix + self.rnn_location + \
-				'_' + str(self.num) + '_' + self.rnn_type
-
-		if self.input_enc_rnn_bi:
-			x_output = tf.keras.layers.Bidirectional(RNN_type(
-				self.all_layers_neurons_rnn,
-				dropout=self.all_layers_dropout,
-				return_sequences=ret_seq,
-				return_state=ret_state,
-				name=self.layername))(x_input, initial_state=self.init_state)
-		else:
-			x_output = RNN_type(
-				self.all_layers_neurons_rnn,
-				dropout=self.all_layers_dropout,
-				return_sequences=ret_seq,
-				return_state=ret_state,
-				name=self.layername)(x_input, initial_state=self.init_state)
-		return x_output
+			output_cell = input_cell
+			output_states = None
+		
+		return output_cell, output_states

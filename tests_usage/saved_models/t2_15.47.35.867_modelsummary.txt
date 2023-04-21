@@ -1,0 +1,145 @@
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ encoder_past_inputs (InputLaye  [(None, 672, 31)]   0           []                               
+ r)                                                                                               
+                                                                                                  
+ dense (Dense)                  (None, 672, 64)      2048        ['encoder_past_inputs[0][0]']    
+                                                                                                  
+ decoder_1_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ dropout (Dropout)              (None, 672, 64)      0           ['dense[0][0]']                  
+                                                                                                  
+ decoder_2_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ decoder_3_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ decoder_4_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ decoder_5_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ decoder_6_inputs (InputLayer)  [(None, 96, 10)]     0           []                               
+                                                                                                  
+ dense_1 (Dense)                (None, 96, 64)       704         ['decoder_1_inputs[0][0]']       
+                                                                                                  
+ encoder_1_selfMHA-1 (MultiHead  (None, 672, 64)     64296       ['dropout[0][0]',                
+ Attention)                                                       'dropout[0][0]',                
+                                                                  'dropout[0][0]']                
+                                                                                                  
+ dense_3 (Dense)                (None, 96, 64)       704         ['decoder_2_inputs[0][0]']       
+                                                                                                  
+ dense_5 (Dense)                (None, 96, 64)       704         ['decoder_3_inputs[0][0]']       
+                                                                                                  
+ dense_7 (Dense)                (None, 96, 64)       704         ['decoder_4_inputs[0][0]']       
+                                                                                                  
+ dense_9 (Dense)                (None, 96, 64)       704         ['decoder_5_inputs[0][0]']       
+                                                                                                  
+ dense_11 (Dense)               (None, 96, 64)       704         ['decoder_6_inputs[0][0]']       
+                                                                                                  
+ dropout_1 (Dropout)            (None, 96, 64)       0           ['dense_1[0][0]']                
+                                                                                                  
+ encoder_1_selfMHA-2 (MultiHead  (None, 672, 64)     64296       ['encoder_1_selfMHA-1[0][0]',    
+ Attention)                                                       'encoder_1_selfMHA-1[0][0]',    
+                                                                  'encoder_1_selfMHA-1[0][0]']    
+                                                                                                  
+ dropout_2 (Dropout)            (None, 96, 64)       0           ['dense_3[0][0]']                
+                                                                                                  
+ dropout_3 (Dropout)            (None, 96, 64)       0           ['dense_5[0][0]']                
+                                                                                                  
+ dropout_4 (Dropout)            (None, 96, 64)       0           ['dense_7[0][0]']                
+                                                                                                  
+ dropout_5 (Dropout)            (None, 96, 64)       0           ['dense_9[0][0]']                
+                                                                                                  
+ dropout_6 (Dropout)            (None, 96, 64)       0           ['dense_11[0][0]']               
+                                                                                                  
+ decoder_1_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_1[0][0]',              
+ adAttention)                                                     'dropout_1[0][0]',              
+                                                                  'dropout_1[0][0]']              
+                                                                                                  
+ encoder_1_selfMHA-3 (MultiHead  (None, 672, 64)     64296       ['encoder_1_selfMHA-2[0][0]',    
+ Attention)                                                       'encoder_1_selfMHA-2[0][0]',    
+                                                                  'encoder_1_selfMHA-2[0][0]']    
+                                                                                                  
+ decoder_2_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_2[0][0]',              
+ adAttention)                                                     'dropout_2[0][0]',              
+                                                                  'dropout_2[0][0]']              
+                                                                                                  
+ decoder_3_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_3[0][0]',              
+ adAttention)                                                     'dropout_3[0][0]',              
+                                                                  'dropout_3[0][0]']              
+                                                                                                  
+ decoder_4_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_4[0][0]',              
+ adAttention)                                                     'dropout_4[0][0]',              
+                                                                  'dropout_4[0][0]']              
+                                                                                                  
+ decoder_5_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_5[0][0]',              
+ adAttention)                                                     'dropout_5[0][0]',              
+                                                                  'dropout_5[0][0]']              
+                                                                                                  
+ decoder_6_casualMHA-1 (MultiHe  (None, 96, 64)      64296       ['dropout_6[0][0]',              
+ adAttention)                                                     'dropout_6[0][0]',              
+                                                                  'dropout_6[0][0]']              
+                                                                                                  
+ decoder_1_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_1_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ decoder_2_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_2_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ decoder_3_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_3_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ decoder_4_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_4_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ decoder_5_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_5_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ decoder_6_crossMHA-1 (MultiHea  (None, 96, 64)      64296       ['decoder_6_casualMHA-1[0][0]',  
+ dAttention)                                                      'encoder_1_selfMHA-3[0][0]',    
+                                                                  'encoder_1_selfMHA-3[0][0]']    
+                                                                                                  
+ time_distributed (TimeDistribu  (None, 96, 1)       65          ['decoder_1_crossMHA-1[0][0]']   
+ ted)                                                                                             
+                                                                                                  
+ time_distributed_1 (TimeDistri  (None, 96, 1)       65          ['decoder_2_crossMHA-1[0][0]']   
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_2 (TimeDistri  (None, 96, 1)       65          ['decoder_3_crossMHA-1[0][0]']   
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_3 (TimeDistri  (None, 96, 1)       65          ['decoder_4_crossMHA-1[0][0]']   
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_4 (TimeDistri  (None, 96, 1)       65          ['decoder_5_crossMHA-1[0][0]']   
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_5 (TimeDistri  (None, 96, 1)       65          ['decoder_6_crossMHA-1[0][0]']   
+ buted)                                                                                           
+                                                                                                  
+ concatenate (Concatenate)      (None, 96, 6)        0           ['time_distributed[0][0]',       
+                                                                  'time_distributed_1[0][0]',     
+                                                                  'time_distributed_2[0][0]',     
+                                                                  'time_distributed_3[0][0]',     
+                                                                  'time_distributed_4[0][0]',     
+                                                                  'time_distributed_5[0][0]']     
+                                                                                                  
+ dense_13 (Dense)               (None, 96, 3)        21          ['concatenate[0][0]']            
+                                                                                                  
+ dense_14 (Dense)               (None, 96, 1)        4           ['dense_13[0][0]']               
+                                                                                                  
+ dense_15 (Dense)               (None, 96, 7)        14          ['dense_14[0][0]']               
+                                                                                                  
+ reshape (Reshape)              (None, 96, 1, 7)     0           ['dense_15[0][0]']               
+                                                                                                  
+==================================================================================================
+Total params: 971,141
+Trainable params: 971,141
+Non-trainable params: 0
+__________________________________________________________________________________________________

@@ -79,7 +79,6 @@ class Build_utils():
         # model structure
         self.IF_GLU = cfg['IF_GLU']
         self.IF_ADDNORM = cfg['IF_ADDNORM']
-        self.IFFFN = cfg['IFFFN']
         self.IFRNN1 = cfg['IFRNN_input']
         self.IFRNN2 = cfg['IFRNN_output']
         self.IFSELF_MHA = cfg['IFSELF_MHA']

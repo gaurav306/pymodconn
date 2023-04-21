@@ -1,0 +1,452 @@
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                   Output Shape         Param #     Connected to                     
+==================================================================================================
+ encoder_past_inputs (InputLaye  [(None, 672, 31)]   0           []                               
+ r)                                                                                               
+                                                                                                  
+ dense (Dense)                  (None, 672, 64)      2048        ['encoder_past_inputs[0][0]']    
+                                                                                                  
+ dropout (Dropout)              (None, 672, 64)      0           ['dense[0][0]']                  
+                                                                                                  
+ bidirectional (Bidirectional)  (None, 672, 16)      3552        ['dropout[0][0]']                
+                                                                                                  
+ bidirectional_1 (Bidirectional  (None, 672, 16)     1248        ['bidirectional[0][0]']          
+ )                                                                                                
+                                                                                                  
+ encoder_future_1_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ bidirectional_2 (Bidirectional  (None, 672, 16)     1248        ['bidirectional_1[0][0]']        
+ )                                                                                                
+                                                                                                  
+ encoder_future_2_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ encoder_future_3_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ encoder_future_4_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ encoder_future_5_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ encoder_future_6_inputs (Input  [(None, 96, 10)]    0           []                               
+ Layer)                                                                                           
+                                                                                                  
+ dense_1 (Dense)                (None, 96, 64)       704         ['encoder_future_1_inputs[0][0]']
+                                                                                                  
+ bidirectional_3 (Bidirectional  (None, 672, 16)     1248        ['bidirectional_2[0][0]']        
+ )                                                                                                
+                                                                                                  
+ dense_4 (Dense)                (None, 96, 64)       704         ['encoder_future_2_inputs[0][0]']
+                                                                                                  
+ dense_7 (Dense)                (None, 96, 64)       704         ['encoder_future_3_inputs[0][0]']
+                                                                                                  
+ dense_10 (Dense)               (None, 96, 64)       704         ['encoder_future_4_inputs[0][0]']
+                                                                                                  
+ dense_13 (Dense)               (None, 96, 64)       704         ['encoder_future_5_inputs[0][0]']
+                                                                                                  
+ dense_16 (Dense)               (None, 96, 64)       704         ['encoder_future_6_inputs[0][0]']
+                                                                                                  
+ dropout_1 (Dropout)            (None, 96, 64)       0           ['dense_1[0][0]']                
+                                                                                                  
+ bidirectional_4 (Bidirectional  [(None, 672, 16),   1248        ['bidirectional_3[0][0]']        
+ )                               (None, 8),                                                       
+                                 (None, 8)]                                                       
+                                                                                                  
+ dropout_2 (Dropout)            (None, 96, 64)       0           ['dense_4[0][0]']                
+                                                                                                  
+ dropout_3 (Dropout)            (None, 96, 64)       0           ['dense_7[0][0]']                
+                                                                                                  
+ dropout_4 (Dropout)            (None, 96, 64)       0           ['dense_10[0][0]']               
+                                                                                                  
+ dropout_5 (Dropout)            (None, 96, 64)       0           ['dense_13[0][0]']               
+                                                                                                  
+ dropout_6 (Dropout)            (None, 96, 64)       0           ['dense_16[0][0]']               
+                                                                                                  
+ bidirectional_5 (Bidirectional  (None, 96, 16)      3552        ['dropout_1[0][0]',              
+ )                                                                'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_15 (Bidirectiona  (None, 96, 16)      3552        ['dropout_2[0][0]',              
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_25 (Bidirectiona  (None, 96, 16)      3552        ['dropout_3[0][0]',              
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_35 (Bidirectiona  (None, 96, 16)      3552        ['dropout_4[0][0]',              
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_45 (Bidirectiona  (None, 96, 16)      3552        ['dropout_5[0][0]',              
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_55 (Bidirectiona  (None, 96, 16)      3552        ['dropout_6[0][0]',              
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_6 (Bidirectional  (None, 96, 16)      1248        ['bidirectional_5[0][0]',        
+ )                                                                'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_16 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_15[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_26 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_25[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_36 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_35[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_46 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_45[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_56 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_55[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_7 (Bidirectional  (None, 96, 16)      1248        ['bidirectional_6[0][0]',        
+ )                                                                'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_17 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_16[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_27 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_26[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_37 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_36[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_47 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_46[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_57 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_56[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_8 (Bidirectional  (None, 96, 16)      1248        ['bidirectional_7[0][0]',        
+ )                                                                'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_18 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_17[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_28 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_27[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_38 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_37[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_48 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_47[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_58 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_57[0][0]',       
+ l)                                                               'bidirectional_4[0][1]',        
+                                                                  'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_9 (Bidirectional  [(None, 96, 16),    1248        ['bidirectional_8[0][0]',        
+ )                               (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_19 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_18[0][0]',       
+ l)                              (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_29 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_28[0][0]',       
+ l)                              (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_39 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_38[0][0]',       
+ l)                              (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_49 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_48[0][0]',       
+ l)                              (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ bidirectional_59 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_58[0][0]',       
+ l)                              (None, 8),                       'bidirectional_4[0][1]',        
+                                 (None, 8)]                       'bidirectional_4[0][2]']        
+                                                                                                  
+ encoder_future_1_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_9[0][0]',        
+ iHeadAttention)                                                  'bidirectional_9[0][0]',        
+                                                                  'bidirectional_9[0][0]']        
+                                                                                                  
+ encoder_past_1_selfMHA (MultiH  (None, 672, 16)     16632       ['bidirectional_4[0][0]',        
+ eadAttention)                                                    'bidirectional_4[0][0]',        
+                                                                  'bidirectional_4[0][0]']        
+                                                                                                  
+ concatenate (Concatenate)      (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_9[0][1]',        
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_9[0][2]']        
+                                                                                                  
+ encoder_future_2_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_19[0][0]',       
+ iHeadAttention)                                                  'bidirectional_19[0][0]',       
+                                                                  'bidirectional_19[0][0]']       
+                                                                                                  
+ concatenate_1 (Concatenate)    (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_19[0][1]',       
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_19[0][2]']       
+                                                                                                  
+ encoder_future_3_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_29[0][0]',       
+ iHeadAttention)                                                  'bidirectional_29[0][0]',       
+                                                                  'bidirectional_29[0][0]']       
+                                                                                                  
+ concatenate_2 (Concatenate)    (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_29[0][1]',       
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_29[0][2]']       
+                                                                                                  
+ encoder_future_4_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_39[0][0]',       
+ iHeadAttention)                                                  'bidirectional_39[0][0]',       
+                                                                  'bidirectional_39[0][0]']       
+                                                                                                  
+ concatenate_3 (Concatenate)    (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_39[0][1]',       
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_39[0][2]']       
+                                                                                                  
+ encoder_future_5_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_49[0][0]',       
+ iHeadAttention)                                                  'bidirectional_49[0][0]',       
+                                                                  'bidirectional_49[0][0]']       
+                                                                                                  
+ concatenate_4 (Concatenate)    (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_49[0][1]',       
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_49[0][2]']       
+                                                                                                  
+ encoder_future_6_selfMHA (Mult  (None, 96, 16)      16632       ['bidirectional_59[0][0]',       
+ iHeadAttention)                                                  'bidirectional_59[0][0]',       
+                                                                  'bidirectional_59[0][0]']       
+                                                                                                  
+ concatenate_5 (Concatenate)    (None, 16)           0           ['bidirectional_4[0][1]',        
+                                                                  'bidirectional_59[0][1]',       
+                                                                  'bidirectional_4[0][2]',        
+                                                                  'bidirectional_59[0][2]']       
+                                                                                                  
+ decoder_future_1_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_1_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_2 (Dense)                (None, 8)            136         ['concatenate[0][0]',            
+                                                                  'concatenate[1][0]']            
+                                                                                                  
+ decoder_future_2_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_2_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_5 (Dense)                (None, 8)            136         ['concatenate_1[0][0]',          
+                                                                  'concatenate_1[1][0]']          
+                                                                                                  
+ decoder_future_3_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_3_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_8 (Dense)                (None, 8)            136         ['concatenate_2[0][0]',          
+                                                                  'concatenate_2[1][0]']          
+                                                                                                  
+ decoder_future_4_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_4_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_11 (Dense)               (None, 8)            136         ['concatenate_3[0][0]',          
+                                                                  'concatenate_3[1][0]']          
+                                                                                                  
+ decoder_future_5_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_5_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_14 (Dense)               (None, 8)            136         ['concatenate_4[0][0]',          
+                                                                  'concatenate_4[1][0]']          
+                                                                                                  
+ decoder_future_6_crossMHA (Mul  (None, 96, 16)      16632       ['encoder_future_6_selfMHA[0][0]'
+ tiHeadAttention)                                                , 'encoder_past_1_selfMHA[0][0]',
+                                                                  'encoder_past_1_selfMHA[0][0]'] 
+                                                                                                  
+ dense_17 (Dense)               (None, 8)            136         ['concatenate_5[0][0]',          
+                                                                  'concatenate_5[1][0]']          
+                                                                                                  
+ bidirectional_10 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_1_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_2[0][0]',                
+                                                                  'dense_2[1][0]']                
+                                                                                                  
+ bidirectional_20 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_2_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_5[0][0]',                
+                                                                  'dense_5[1][0]']                
+                                                                                                  
+ bidirectional_30 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_3_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_8[0][0]',                
+                                                                  'dense_8[1][0]']                
+                                                                                                  
+ bidirectional_40 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_4_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_11[0][0]',               
+                                                                  'dense_11[1][0]']               
+                                                                                                  
+ bidirectional_50 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_5_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_14[0][0]',               
+                                                                  'dense_14[1][0]']               
+                                                                                                  
+ bidirectional_60 (Bidirectiona  (None, 96, 16)      1248        ['decoder_future_6_crossMHA[0][0]
+ l)                                                              ',                               
+                                                                  'dense_17[0][0]',               
+                                                                  'dense_17[1][0]']               
+                                                                                                  
+ bidirectional_11 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_10[0][0]',       
+ l)                                                               'dense_2[0][0]',                
+                                                                  'dense_2[1][0]']                
+                                                                                                  
+ bidirectional_21 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_20[0][0]',       
+ l)                                                               'dense_5[0][0]',                
+                                                                  'dense_5[1][0]']                
+                                                                                                  
+ bidirectional_31 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_30[0][0]',       
+ l)                                                               'dense_8[0][0]',                
+                                                                  'dense_8[1][0]']                
+                                                                                                  
+ bidirectional_41 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_40[0][0]',       
+ l)                                                               'dense_11[0][0]',               
+                                                                  'dense_11[1][0]']               
+                                                                                                  
+ bidirectional_51 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_50[0][0]',       
+ l)                                                               'dense_14[0][0]',               
+                                                                  'dense_14[1][0]']               
+                                                                                                  
+ bidirectional_61 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_60[0][0]',       
+ l)                                                               'dense_17[0][0]',               
+                                                                  'dense_17[1][0]']               
+                                                                                                  
+ bidirectional_12 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_11[0][0]',       
+ l)                                                               'dense_2[0][0]',                
+                                                                  'dense_2[1][0]']                
+                                                                                                  
+ bidirectional_22 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_21[0][0]',       
+ l)                                                               'dense_5[0][0]',                
+                                                                  'dense_5[1][0]']                
+                                                                                                  
+ bidirectional_32 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_31[0][0]',       
+ l)                                                               'dense_8[0][0]',                
+                                                                  'dense_8[1][0]']                
+                                                                                                  
+ bidirectional_42 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_41[0][0]',       
+ l)                                                               'dense_11[0][0]',               
+                                                                  'dense_11[1][0]']               
+                                                                                                  
+ bidirectional_52 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_51[0][0]',       
+ l)                                                               'dense_14[0][0]',               
+                                                                  'dense_14[1][0]']               
+                                                                                                  
+ bidirectional_62 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_61[0][0]',       
+ l)                                                               'dense_17[0][0]',               
+                                                                  'dense_17[1][0]']               
+                                                                                                  
+ bidirectional_13 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_12[0][0]',       
+ l)                                                               'dense_2[0][0]',                
+                                                                  'dense_2[1][0]']                
+                                                                                                  
+ bidirectional_23 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_22[0][0]',       
+ l)                                                               'dense_5[0][0]',                
+                                                                  'dense_5[1][0]']                
+                                                                                                  
+ bidirectional_33 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_32[0][0]',       
+ l)                                                               'dense_8[0][0]',                
+                                                                  'dense_8[1][0]']                
+                                                                                                  
+ bidirectional_43 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_42[0][0]',       
+ l)                                                               'dense_11[0][0]',               
+                                                                  'dense_11[1][0]']               
+                                                                                                  
+ bidirectional_53 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_52[0][0]',       
+ l)                                                               'dense_14[0][0]',               
+                                                                  'dense_14[1][0]']               
+                                                                                                  
+ bidirectional_63 (Bidirectiona  (None, 96, 16)      1248        ['bidirectional_62[0][0]',       
+ l)                                                               'dense_17[0][0]',               
+                                                                  'dense_17[1][0]']               
+                                                                                                  
+ bidirectional_14 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_13[0][0]',       
+ l)                              (None, 8),                       'dense_2[0][0]',                
+                                 (None, 8)]                       'dense_2[1][0]']                
+                                                                                                  
+ bidirectional_24 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_23[0][0]',       
+ l)                              (None, 8),                       'dense_5[0][0]',                
+                                 (None, 8)]                       'dense_5[1][0]']                
+                                                                                                  
+ bidirectional_34 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_33[0][0]',       
+ l)                              (None, 8),                       'dense_8[0][0]',                
+                                 (None, 8)]                       'dense_8[1][0]']                
+                                                                                                  
+ bidirectional_44 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_43[0][0]',       
+ l)                              (None, 8),                       'dense_11[0][0]',               
+                                 (None, 8)]                       'dense_11[1][0]']               
+                                                                                                  
+ bidirectional_54 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_53[0][0]',       
+ l)                              (None, 8),                       'dense_14[0][0]',               
+                                 (None, 8)]                       'dense_14[1][0]']               
+                                                                                                  
+ bidirectional_64 (Bidirectiona  [(None, 96, 16),    1248        ['bidirectional_63[0][0]',       
+ l)                              (None, 8),                       'dense_17[0][0]',               
+                                 (None, 8)]                       'dense_17[1][0]']               
+                                                                                                  
+ time_distributed (TimeDistribu  (None, 96, 1)       17          ['bidirectional_14[0][0]']       
+ ted)                                                                                             
+                                                                                                  
+ time_distributed_1 (TimeDistri  (None, 96, 1)       17          ['bidirectional_24[0][0]']       
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_2 (TimeDistri  (None, 96, 1)       17          ['bidirectional_34[0][0]']       
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_3 (TimeDistri  (None, 96, 1)       17          ['bidirectional_44[0][0]']       
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_4 (TimeDistri  (None, 96, 1)       17          ['bidirectional_54[0][0]']       
+ buted)                                                                                           
+                                                                                                  
+ time_distributed_5 (TimeDistri  (None, 96, 1)       17          ['bidirectional_64[0][0]']       
+ buted)                                                                                           
+                                                                                                  
+ concatenate_6 (Concatenate)    (None, 96, 6)        0           ['time_distributed[0][0]',       
+                                                                  'time_distributed_1[0][0]',     
+                                                                  'time_distributed_2[0][0]',     
+                                                                  'time_distributed_3[0][0]',     
+                                                                  'time_distributed_4[0][0]',     
+                                                                  'time_distributed_5[0][0]']     
+                                                                                                  
+ dense_19 (Dense)               (None, 96, 3)        21          ['concatenate_6[0][0]']          
+                                                                                                  
+ dense_20 (Dense)               (None, 96, 1)        4           ['dense_19[0][0]']               
+                                                                                                  
+ dense_21 (Dense)               (None, 96, 7)        14          ['dense_20[0][0]']               
+                                                                                                  
+ reshape (Reshape)              (None, 96, 1, 7)     0           ['dense_21[0][0]']               
+                                                                                                  
+==================================================================================================
+Total params: 320,693
+Trainable params: 320,693
+Non-trainable params: 0
+__________________________________________________________________________________________________

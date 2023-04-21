@@ -49,21 +49,6 @@ class get_causal_attention_mask():
 		return mask
 
 
-
-
-class FeedForward():
-	def __init__(self, d1, dropout_rate=0.1):
-		self.dense1 = tf.keras.layers.Dense(d1*4, activation='relu')
-		self.dense2 = tf.keras.layers.Dense(d1)
-		self.dropout = tf.keras.layers.Dropout(dropout_rate)
-
-	def __call__(self, x):
-		x = self.dense1(x)
-		x = self.dense2(x)
-		x = self.dropout(x)
-		return x
-
-
 def linear_layer(size,
 				 activation=None,
 				 use_time_distributed=False,
@@ -83,34 +68,38 @@ class GRN_layer():
 	Adapted from 
 	https://github.com/greatwhiz/tft_tf2/blob/HEAD/libs/tft_model.py
 	"""
-	def __init__(self, hidden_layer_size, output_size, dropout_rate=None, use_time_distributed=False, activation_layer='elu'):
+	def __init__(self, IF_GRN, hidden_layer_size, output_size, dropout_rate=None, use_time_distributed=False, activation_layer='elu'):
 		self.hidden_layer_size = hidden_layer_size
 		self.output_size = output_size
 		self.dropout_rate = dropout_rate
 		self.use_time_distributed = use_time_distributed
 		self.activation_layer = activation_layer
+		self.IF_GRN = IF_GRN
 
 	def __call__(self, x):
-		skip = x
+		if self.IF_GRN:
+			skip = x
 
-		hidden = linear_layer(
-			self.hidden_layer_size,
-			activation=None,
-			use_time_distributed=self.use_time_distributed)(x)
-		hidden = tf.keras.layers.Activation(self.activation_layer)(hidden)
-		hidden = linear_layer(
-			self.hidden_layer_size,
-			activation=None,
-			use_time_distributed=self.use_time_distributed)(hidden)
+			hidden = linear_layer(
+				self.hidden_layer_size,
+				activation=None,
+				use_time_distributed=self.use_time_distributed)(x)
+			hidden = tf.keras.layers.Activation(self.activation_layer)(hidden)
+			hidden = linear_layer(
+				self.hidden_layer_size,
+				activation=None,
+				use_time_distributed=self.use_time_distributed)(hidden)
 
-		grn_output, gate = GLU_with_ADDNORM(IF_GLU=True,
-											  IF_ADDNORM=True,
-											  hidden_layer_size=self.output_size,
-											  dropout_rate=self.dropout_rate,
-											  use_time_distributed=self.use_time_distributed,
-											  activation=None)(skip, hidden)
-		
-		return grn_output, gate
+			grn_output, gate = GLU_with_ADDNORM(IF_GLU=True,
+												IF_ADDNORM=True,
+												hidden_layer_size=self.output_size,
+												dropout_rate=self.dropout_rate,
+												use_time_distributed=self.use_time_distributed,
+												activation=None)(skip, hidden)
+			
+			return grn_output, gate
+		else:
+			return x, []
 
 
 class GLU_with_ADDNORM():
@@ -218,4 +207,96 @@ class MERGE_LIST():
 		x = self.dense1(x)
 		x = self.dense2(x)
 		return x
+
+
+
+
+
+class rnn_unit():
+	def __init__(self, cfg, rnn_location, num):  #rnn_location = 'encoder_input' or 'decoder_input' or 'decoder_output'
+
+		self.all_layers_dropout = cfg['all_layers_dropout']
+		self.rnn_type = cfg['rnn_type']
+		self.input_enc_rnn_depth = cfg['input_enc_rnn_depth']
+		self.input_enc_rnn_bi = cfg['input_enc_rnn_bi']
+		self.all_layers_neurons = cfg['all_layers_neurons']
+		self.all_layers_neurons_rnn = int(
+			self.all_layers_neurons/self.input_enc_rnn_depth)
+		self.all_layers_neurons_rnn = 8 * int(self.all_layers_neurons_rnn/8)
+		self.all_layers_dropout = cfg['all_layers_dropout']
+		self.rnn_location = rnn_location
+		self.cfg = cfg
+		self.num = num
+
+	def __call__(self, input_to_layers, init_states=None):
+		if self.input_enc_rnn_depth == 1:
+			return self.single_rnn_layer(x_input=input_to_layers, init_states=init_states, mid_layer=False, layername_prefix='Only_')
+		else:
+			x = self.single_rnn_layer(x_input=input_to_layers, init_states=init_states,
+									  mid_layer=True, layername_prefix='First_')  # change
+						
+			x, _ = GLU_with_ADDNORM(
+									IF_GLU=self.cfg['IF_GLU'],
+									IF_ADDNORM=self.cfg['IF_ADDNORM'],
+									hidden_layer_size=self.all_layers_neurons,
+									dropout_rate=self.all_layers_dropout,
+									use_time_distributed=False,
+									activation=None)(input_to_layers, x)
+			
+			for i in range(0, self.input_enc_rnn_depth-2):
+				x = self.single_rnn_layer(
+					x_input=x, init_states=init_states, mid_layer=True, layername_prefix='Mid_%s_' % (i+1))
+				
+				x, _ = GLU_with_ADDNORM(
+									IF_GLU=self.cfg['IF_GLU'],
+									IF_ADDNORM=self.cfg['IF_ADDNORM'],
+									hidden_layer_size=self.all_layers_neurons,
+									dropout_rate=self.all_layers_dropout,
+									use_time_distributed=False,
+									activation=None)(input_to_layers, x)
+
+			return self.single_rnn_layer(x_input=x, init_states=init_states, mid_layer=False, layername_prefix='Last_')
+
+	def single_rnn_layer(self, x_input, init_states, mid_layer=False, layername_prefix=None):
+		if self.rnn_type == "LSTM":
+			RNN_type = tf.keras.layers.LSTM
+		elif self.rnn_type == "GRU":
+			RNN_type = tf.keras.layers.GRU
+		elif self.rnn_type == "RNN":
+			RNN_type = tf.keras.layers.SimpleRNN
+
+		if self.rnn_location == "encoder_input":
+			self.init_state = None
+		elif self.rnn_location == "decoder_input" or self.rnn_location == "decoder_output":
+			self.init_state = init_states
+
+		if mid_layer:
+			ret_seq = True
+			ret_state = False
+		else:
+			ret_seq = True
+			ret_state = True
+
+		if self.input_enc_rnn_bi:
+			self.layername = layername_prefix + self.rnn_location + \
+				'_' + str(self.num) + '_bi' + self.rnn_type
+		else:
+			self.layername = layername_prefix + self.rnn_location + \
+				'_' + str(self.num) + '_' + self.rnn_type
+
+		if self.input_enc_rnn_bi:
+			x_output = tf.keras.layers.Bidirectional(RNN_type(
+				self.all_layers_neurons_rnn,
+				dropout=self.all_layers_dropout,
+				return_sequences=ret_seq,
+				return_state=ret_state,
+				name=self.layername))(x_input, initial_state=self.init_state)
+		else:
+			x_output = RNN_type(
+				self.all_layers_neurons_rnn,
+				dropout=self.all_layers_dropout,
+				return_sequences=ret_seq,
+				return_state=ret_state,
+				name=self.layername)(x_input, initial_state=self.init_state)
+		return x_output
 

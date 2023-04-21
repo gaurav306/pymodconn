@@ -1,6 +1,6 @@
 import pymodconn.model_gen_utils as Model_utils
-from pymodconn.major_layers import Input_encoder_MHA_RNN
-from pymodconn.major_layers import Output_decoder_crossMHA_RNN
+from pymodconn.major_layers import Encoder_class
+from pymodconn.major_layers import Decoder_class
 from pymodconn.utils_layers import *
 import numpy as np
 import tensorflow as tf
@@ -65,7 +65,6 @@ class ModelClass():
         # model structure
         self.IF_GLU = cfg['IF_GLU']
         self.IF_ADDNORM = cfg['IF_ADDNORM']
-        self.IFFFN = cfg['IFFFN']
         self.IFRNN1 = cfg['IFRNN_input']
         self.IFRNN2 = cfg['IFRNN_output']
         self.IFSELF_MHA = cfg['IFSELF_MHA']
@@ -97,35 +96,23 @@ class ModelClass():
         self.future_data_col = self.future_data_col - self.control_future_cells + 1
 
         # input for encoder_past
-        encoder_past1_inputs = tf.keras.layers.Input(
+        encoder_inputs = tf.keras.layers.Input(
             shape=(self.n_past, self.n_features_input), name='encoder_past_inputs')
-        encoder_outputs_past_seq, encoder_outputs_past_allstates = Input_encoder_MHA_RNN(
-            self.cfg, location='encoder_past', num=1)(encoder_past1_inputs, init_states=None)
-
-        self.merge_states_units = int(
-            self.all_layers_neurons/self.input_enc_rnn_depth)
-        self.merge_states_units = 8 * int(self.merge_states_units/8)
-        # print('input for encoder_future1')
-        # input for encoder_future1
         
+        encoder_outputs_seq, encoder_outputs_allstates = Encoder_class(
+            self.cfg, str(1))(encoder_inputs, init_states=None)
+
         decoder_outputs_list = []
         
         for i in range(1, self.control_future_cells+1):
-            locals()[f"encoder_future_{i}_inputs"] = tf.keras.layers.Input(shape=(
-                self.n_future, self.future_data_col), name='encoder_future_%s_inputs' % str(i))
-            locals()[f"encoder_outputs_future_{i}_seq"], locals()[f"encoder_outputs_future_{i}_allstates"] = Input_encoder_MHA_RNN(self.cfg, 
-                                                                                                                location='encoder_future', 
-                                                                                                                num=i)(locals()[f"encoder_future_{i}_inputs"],
-                                                                                                                        init_states=encoder_outputs_past_allstates)
-            locals()[f"encoder_{i}_allstates"] = MERGE_STATES(self.merge_states_units)(encoder_outputs_past_allstates, 
-                                                                                    locals()[f"encoder_outputs_future_{i}_allstates"])
-            locals()[f"decoder_outputs_{i}"] = Output_decoder_crossMHA_RNN(self.cfg, location='decoder_future', num=i)(locals()[f"encoder_outputs_future_{i}_seq"],
-                                                                                                                        encoder_outputs_past_seq,
-                                                                                                                        init_states=locals()[f"encoder_{i}_allstates"])
-            decoder_outputs_list.append(locals()[f"decoder_outputs_{i}"])
+            locals()[f"decoder_{i}_inputs"] = tf.keras.layers.Input(shape=(self.n_future, self.future_data_col), name=f"decoder_{i}_inputs")
+            
+            locals()[f"decoder_{i}_outputs"] = Decoder_class(self.cfg, str(i))(locals()[f"decoder_{i}_inputs"],
+                                                                                encoder_outputs_seq,
+                                                                                init_states=encoder_outputs_allstates)
+            decoder_outputs_list.append(locals()[f"decoder_{i}_outputs"])
         
         decoder_outputs_all = MERGE_LIST(self.n_features_output)(decoder_outputs_list)
-
 
         # print('Probabilistic or non probabilistic changes')
         # If or not using the probabilistic loss, reshape the output to match the shape required by the loss function.
@@ -146,12 +133,12 @@ class ModelClass():
             raise ValueError(
                 'model_type_prob should be either prob or nonprob')
 
-        encoder_future_inputs = []
+        decoder_inputs = []
         for i in range(1, self.control_future_cells+1):
-            encoder_future_inputs.append(locals()[f"encoder_future_{i}_inputs"])
+            decoder_inputs.append(locals()[f"decoder_{i}_inputs"])
 
         self.model = Model(
-            [encoder_past1_inputs, encoder_future_inputs], decoder_outputs4)
+            [encoder_inputs, decoder_inputs], decoder_outputs4)
 
         Model_utils.Build_utils(
             self.cfg, self.current_dt).postbuild_model(self.model)
