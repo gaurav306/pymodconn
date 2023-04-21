@@ -29,31 +29,31 @@ class Build_utils():
     This class is used to compile, make sumamry and save as png.
     """
 
-    def __init__(self, configs, current_dt):
-        if configs['model']['if_seed']:
-            np.random.seed(configs['model']['seed'])
-            tf.random.set_seed(configs['model']['seed'])
-        self.epochs = configs['training']['epochs']
-        self.batch_size = configs['training']['batch_size']
-        self.future_data_col = configs['data']['future_data_col']
-        self.n_past = configs['data']['n_past']
-        self.n_features_input = configs['data']['n_features_input']
-        self.all_layers_neurons = configs['model']['all_layers_neurons']
-        self.all_layers_dropout = configs['model']['all_layers_dropout']
-        self.n_future = configs['data']['n_future']
-        self.n_features_output = configs['data']['n_features_output']
-        self.optimizer = configs['model']['optimizer']  # new
-        self.SGD_lr = configs['model']['SGD']['lr']  # new
-        self.SGD_mom = configs['model']['SGD']['momentum']  # new
-        self.Adam_lr = configs['model']['Adam']['lr']
-        self.Adam_b1 = configs['model']['Adam']['b1']
-        self.Adam_b2 = configs['model']['Adam']['b2']
-        self.Adam_epsi = configs['model']['Adam']['epsi']
-        self.loss_func = configs['model']['loss']
-        self.model_type_prob = configs['model']['model_type_prob']
-        self.loss_prob = configs['model']['loss_prob']
-        self.q = configs['model']['quantiles']
-        self.control_future_cells = configs['model']['control_future_cells']
+    def __init__(self, cfg, current_dt):
+        if cfg['if_seed']:
+            np.random.seed(cfg['seed'])
+            tf.random.set_seed(cfg['seed'])
+        self.epochs = cfg['epochs']
+        self.batch_size = cfg['batch_size']
+        self.future_data_col = cfg['future_data_col']
+        self.n_past = cfg['n_past']
+        self.n_features_input = cfg['n_features_input']
+        self.all_layers_neurons = cfg['all_layers_neurons']
+        self.all_layers_dropout = cfg['all_layers_dropout']
+        self.n_future = cfg['n_future']
+        self.n_features_output = cfg['n_features_output']
+        self.optimizer = cfg['optimizer']  # new
+        self.SGD_lr = cfg['SGD']['lr']  # new
+        self.SGD_mom = cfg['SGD']['momentum']  # new
+        self.Adam_lr = cfg['Adam']['lr']
+        self.Adam_b1 = cfg['Adam']['b1']
+        self.Adam_b2 = cfg['Adam']['b2']
+        self.Adam_epsi = cfg['Adam']['epsi']
+        self.loss_func = cfg['loss']
+        self.model_type_prob = cfg['model_type_prob']
+        self.loss_prob = cfg['loss_prob']
+        self.q = cfg['quantiles']
+        self.control_future_cells = cfg['control_future_cells']
 
         self.n_features_output_block = 1
 
@@ -63,31 +63,31 @@ class Build_utils():
         self.n_outputs_lastlayer = 2 if self.loss_prob == 'parametric' else len(
             self.q)
 
-        self.metrics = configs['model']['metrics']
-        self.mha_head = configs['model']['mha_head']
+        self.metrics = cfg['metrics']
+        self.mha_head = cfg['mha_head']
 
-        self.configs = configs
-        self.rnn_type = configs['rnn_units']['rnn_type']
-        self.dec_attn_mask = configs['model']['dec_attn_mask']
+        self.cfg = cfg
+        self.rnn_type = cfg['rnn_type']
+        self.dec_attn_mask = cfg['dec_attn_mask']
 
-        self.model_type = configs['model']['model_type']
-        self.fit_type = configs['training']['fit_type']
-        self.seq_len = configs['training']['seq_len']
-        self.if_save_model_image = configs['model']['if_model_image']
-        self.if_model_summary = configs['model']['if_model_summary']
+        self.model_type = cfg['model_type']
+        self.fit_type = cfg['fit_type']
+        self.seq_len = cfg['seq_len']
+        self.if_save_model_image = cfg['if_model_image']
+        self.if_model_summary = cfg['if_model_summary']
 
         # model structure
-        self.IF_GLU = configs['model']['IF_GLU']
-        self.IF_ADDNORM = configs['model']['IF_ADDNORM']
-        self.IFFFN = configs['model']['IFFFN']
-        self.IFRNN1 = configs['model']['IFRNN_input']
-        self.IFRNN2 = configs['model']['IFRNN_output']
-        self.IFSELF_MHA = configs['model']['IFSELF_MHA']
-        self.IFCASUAL_MHA = configs['model']['IFCASUAL_MHA']
-        self.IFCROSS_MHA = configs['model']['IFCROSS_MHA']
+        self.IF_GLU = cfg['IF_GLU']
+        self.IF_ADDNORM = cfg['IF_ADDNORM']
+        self.IFFFN = cfg['IFFFN']
+        self.IFRNN1 = cfg['IFRNN_input']
+        self.IFRNN2 = cfg['IFRNN_output']
+        self.IFSELF_MHA = cfg['IFSELF_MHA']
+        self.IFCASUAL_MHA = cfg['IFCASUAL_MHA']
+        self.IFCROSS_MHA = cfg['IFCROSS_MHA']
 
-        self.save_models_dir = configs['model']['save_models_dir']
-        self.save_results_dir = configs['model']['save_results_dir']
+        self.save_models_dir = cfg['save_models_dir']
+        self.save_results_dir = cfg['save_results_dir']
         self.save_training_history_file = os.path.join(
             self.save_results_dir, '%s.csv' % (current_dt))
         self.save_training_history = os.path.join(

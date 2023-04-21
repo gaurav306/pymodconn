@@ -3,7 +3,7 @@ import sys
 import tensorflow as tf
 
 from pymodconn.configs_init import get_configs
-from pymodconn.model_gen import ModelClass
+from pymodconn.model_gen_old import ModelClass
 
 # takes argument as time_dt for all file saves and configuration json data
 def runmain(time_dt, configs_data):
