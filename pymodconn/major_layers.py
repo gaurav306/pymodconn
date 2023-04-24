@@ -212,7 +212,7 @@ class MHA_block_class():
 								output_size = self.all_layers_neurons,
 								dropout_rate = self.all_layers_dropout,
 								use_time_distributed = True,
-								activation_layer = 'elu')(output_cell)					
+								activation_layer_type = 'elu')(output_cell)					
 			
 			return output_cell
 		
@@ -265,7 +265,7 @@ class RNN_block_class():
 									output_size=self.all_layers_neurons,
 									dropout_rate=self.all_layers_dropout,
 									use_time_distributed=True,
-									activation_layer='elu')(output_cell)
+									activation_layer_type='elu')(output_cell)
 		else:
 			output_cell = input_cell
 			output_states = None

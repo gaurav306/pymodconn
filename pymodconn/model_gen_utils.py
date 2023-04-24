@@ -149,13 +149,21 @@ class Build_utils():
             self.model.summary()
 
         self.trainable_count = count_params(model.trainable_weights)
-
+        '''
         self.GET_MODEL_SIZE_GB = get_model_memory_usage(
             self.batch_size, self.model)
         print('Trainable parameters in the model : %d' % self.trainable_count)
+        '''
         with open(self.save_modelsummary_name, 'w') as f:
-            self.model.summary(print_fn=lambda x: f.write(x + '\n'))
-
+            self.model.summary(print_fn=lambda x: f.write(x + '\n'), 
+                               line_length = 250, 
+                               expand_nested=True,
+                               show_trainable=True)
+        '''
+        with open(self.save_modelsummary_name, 'a') as f:
+            f.write('_' * 25 + '\n')
+            f.write('Model size in GB : %f' % self.GET_MODEL_SIZE_GB)
+        '''
         if self.if_save_model_image:
             print('Saving model as %s' % self.save_modelimage_name)
             plot_model(self.model, to_file=self.save_modelimage_name,

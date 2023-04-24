@@ -25,6 +25,6 @@ ident = 'Decoders-%s_MHAfirst-%s_RNN-%s_Depth-%s_bi-%s_NNs-%s_' % (
 		configs['input_enc_rnn_bi'],
 		configs['all_layers_neurons'])
 
-ident = 't2_'
+ident = 'WithCustom_models_GLU_ADDNORM_'
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 runmain(current_run_dt, configs)
