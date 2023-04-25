@@ -11,11 +11,12 @@ def runmain(time_dt, configs_data):
 	tf.keras.backend.clear_session()
 	model_class = ModelClass(configs_data, time_dt)
 	model_class.build_model()
-	print('model_class.model.inputs: ',model_class.model.inputs)
-	print('model_class.model.outputs: ',model_class.model.outputs)
+	#print('model_class.model.inputs: ',model_class.model.inputs)
+	#print('model_class.model.outputs: ',model_class.model.outputs)
 
 
 configs = get_configs('config_model.yaml')
+
 
 ident = 'Decoders-%s_MHAfirst-%s_RNN-%s_Depth-%s_bi-%s_NNs-%s_' % (
 		configs['control_future_cells'],	
@@ -25,6 +26,15 @@ ident = 'Decoders-%s_MHAfirst-%s_RNN-%s_Depth-%s_bi-%s_NNs-%s_' % (
 		configs['input_enc_rnn_bi'],
 		configs['all_layers_neurons'])
 
-ident = 'WithCustom_models_GLU_ADDNORM_'
+ident = 'test_'
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 runmain(current_run_dt, configs)
+
+'''
+
+for i in [1,4,6]:
+	configs['MERGE_STATES_METHOD'] = i
+	ident = 'noMHA_MERGE_%s_grn_glu_' % i
+	current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
+	runmain(current_run_dt, configs)
+'''

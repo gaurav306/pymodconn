@@ -20,7 +20,7 @@ def assert_check_configs(configs):
 		'model_type_prob'] == 'nonprob', 'model_type_prob must be either prob or nonprob'
 	assert configs['loss_prob'] == 'nonparametric' or configs[
 		'loss_prob'] == 'parametric', 'loss_prob must be either nonparametric or parametric'
-	assert configs['control_future_cells'] == 1 or configs['control_future_cells'] == 6, 'control_future_cells must be either 1 or 6'
+	#assert configs['control_future_cells'] == 1 or configs['control_future_cells'] == 6, 'control_future_cells must be either 1 or 6'
 	assert configs['all_layers_neurons'] % 8 == 0 and configs[
 		'all_layers_neurons'] >= 8, 'all_layers_neurons must be divisible by 8 and greater than or equal to 8'
 	assert configs['mha_head'] % 8 == 0 and configs[

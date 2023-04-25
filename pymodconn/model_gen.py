@@ -63,8 +63,6 @@ class ModelClass():
         self.model_size_GB = 0
 
         # model structure
-        self.IF_GLU = cfg['IF_GLU']
-        self.IF_ADDNORM = cfg['IF_ADDNORM']
         self.IFRNN1 = cfg['IFRNN_input']
         self.IFRNN2 = cfg['IFRNN_output']
         self.IFSELF_MHA = cfg['IFSELF_MHA']
@@ -109,7 +107,7 @@ class ModelClass():
             
             locals()[f"decoder_{i}_outputs"] = Decoder_class(self.cfg, str(i))(locals()[f"decoder_{i}_inputs"],
                                                                                 encoder_outputs_seq,
-                                                                                init_states=encoder_outputs_allstates)
+                                                                                encoder_states=encoder_outputs_allstates)
             decoder_outputs_list.append(locals()[f"decoder_{i}_outputs"])
         
         decoder_outputs_all = MERGE_LIST(self.n_features_output)(decoder_outputs_list)

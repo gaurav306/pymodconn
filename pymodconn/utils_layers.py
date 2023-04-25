@@ -51,7 +51,7 @@ class get_causal_attention_mask1(tf.keras.layers.Layer):
 
 
 class linear_layer(tf.keras.layers.Layer):
-	def __init__(self, hidden_layer_size, activation=None, use_time_distributed=True, use_bias=True):
+	def __init__(self, hidden_layer_size, activation=None, use_time_distributed=False, use_bias=True):
 		super().__init__()
 		self.use_time_distributed = use_time_distributed
 		self.activation = activation
@@ -78,14 +78,13 @@ class GRN_layer(tf.keras.layers.Layer):
 	Adapted from 
 	https://github.com/greatwhiz/tft_tf2/blob/HEAD/libs/tft_model.py
 	"""
-	def __init__(self, IF_GRN, hidden_layer_size, output_size, dropout_rate=None, use_time_distributed=False, activation_layer_type='elu'):
+	def __init__(self, hidden_layer_size, output_size, dropout_rate=None, use_time_distributed=False, activation_layer_type='elu'):
 		super().__init__()
 		self.hidden_layer_size = hidden_layer_size
 		self.output_size = output_size
 		self.dropout_rate = dropout_rate
 		self.use_time_distributed = use_time_distributed
 		self.activation_layer_type = activation_layer_type
-		self.IF_GRN = IF_GRN
 		self.linear_layer1 = linear_layer(self.hidden_layer_size,
 										activation=None,
 										use_time_distributed=self.use_time_distributed)
@@ -95,81 +94,67 @@ class GRN_layer(tf.keras.layers.Layer):
 		
 		self.activation_layer = tf.keras.layers.Activation(self.activation_layer_type)
 		
-		self.gluwithaddnorm = GLU_with_ADDNORM(True, True, self.output_size, self.dropout_rate, self.use_time_distributed, None)
+		self.gluwithaddnorm = GLU_with_ADDNORM(self.output_size, self.dropout_rate, self.use_time_distributed, None)
 
 
 	def call(self, x, training=False):
-		if self.IF_GRN:
-			skip = x
+		skip = x
 
-			hidden = self.linear_layer1(x)
-			hidden = self.activation_layer(hidden)
-			hidden = self.linear_layer2(hidden)
+		hidden = self.linear_layer1(x)
+		hidden = self.activation_layer(hidden)
+		hidden = self.linear_layer2(hidden)
 
-			grn_output, gate = self.gluwithaddnorm(skip, hidden)
-			
-			return grn_output, gate
-		else:
-			return x, []
+		grn_output, gate = self.gluwithaddnorm(skip, hidden)
+		
+		return grn_output, gate
+
 
 class GLU_with_ADDNORM(tf.keras.layers.Layer):
-	def __init__(self, IF_GLU, IF_ADDNORM , hidden_layer_size, dropout_rate, use_time_distributed=True, activation=None):
+	def __init__(self, output_layer_size, dropout_rate, use_time_distributed=True, activation=None):
 		super().__init__()
-		self.hidden_layer_size = hidden_layer_size
+		self.output_layer_size = output_layer_size
 		self.dropout_rate = dropout_rate
 		self.use_time_distributed = use_time_distributed
 		self.activation = activation
-		self.IF_GLU = IF_GLU
-		self.IF_ADDNORM = IF_ADDNORM
-		self.GLU_layer = GLU_layer(hidden_layer_size = self.hidden_layer_size,
+		self.linear_layer1 = linear_layer(self.output_layer_size,
+										activation=None,
+										use_time_distributed=self.use_time_distributed)
+		self.GLU_layer = GLU_layer(output_layer_size = self.output_layer_size,
 						  dropout_rate = self.dropout_rate,
 						  use_time_distributed = self.use_time_distributed,
 						  activation=None)
-		self.ADD_NORM_layer = ADD_NORM(hidden_layer_size = self.hidden_layer_size,
-						 use_time_distributed = self.use_time_distributed)
-		
-
+		self.ADD_NORM_layer = ADD_NORM()
+	
 	def call(self, skip, x, training=False):
-		if self.IF_GLU:
-			x, gate = self.GLU_layer(x)
-		else:
-			gate = []
-		if self.IF_ADDNORM:
-			x = self.ADD_NORM_layer(skip, x)
+		x, gate = self.GLU_layer(x)
+		
+		x = self.linear_layer1(x)
+		
+		x = self.ADD_NORM_layer(skip, x)
 		return x, gate
 
 class ADD_NORM(tf.keras.layers.Layer):
-	def __init__(self, hidden_layer_size, use_time_distributed=True):
+	def __init__(self):
 		super().__init__()
-		self.hidden_layer_size = hidden_layer_size
-		self.use_time_distributed = use_time_distributed
-		self.dense_layer = tf.keras.layers.Dense(self.hidden_layer_size)
-		self.td_layer = tf.keras.layers.TimeDistributed(self.dense_layer)	
 		self.add_layer = tf.keras.layers.Add()
 		self.norm_layer = tf.keras.layers.LayerNormalization()
 
 	def call(self, skip, x, training=False):
-
-		if self.use_time_distributed:
-			skip = self.td_layer(skip)
-		else:
-			skip = self.dense_layer(skip)
-
 		x = [skip, x]
 		tmp = self.add_layer(x)
 		tmp = self.norm_layer(tmp)
 		return tmp
 
 class GLU_layer(tf.keras.layers.Layer):
-	def __init__(self, hidden_layer_size, dropout_rate, use_time_distributed=True, activation=None):
+	def __init__(self, output_layer_size, dropout_rate, use_time_distributed=True, activation=None):
 		super().__init__()
-		self.hidden_layer_size = hidden_layer_size
+		self.output_layer_size = output_layer_size
 		self.dropout_rate = dropout_rate
 		self.use_time_distributed = use_time_distributed
 		self.activation = activation
 		self.dr_layer = tf.keras.layers.Dropout(self.dropout_rate)
-		self.dense_layer = tf.keras.layers.Dense(self.hidden_layer_size, activation=self.activation)
-		self.dense_sigmoid_layer = tf.keras.layers.Dense(self.hidden_layer_size, activation='sigmoid')
+		self.dense_layer = tf.keras.layers.Dense(self.output_layer_size, activation=self.activation)
+		self.dense_sigmoid_layer = tf.keras.layers.Dense(self.output_layer_size, activation='sigmoid')
 		self.multiply_layer = tf.keras.layers.Multiply()
 		self.td_layer = tf.keras.layers.TimeDistributed(self.dense_layer)
 		self.td_sigmoid_layer = tf.keras.layers.TimeDistributed(self.dense_sigmoid_layer)
@@ -190,25 +175,83 @@ class GLU_layer(tf.keras.layers.Layer):
 		return x, gate
 
 
-class MERGE_STATES_CONCAT():
+
+class STATES_MANIPULATION_BLOCK():
 	""" Merge states of two different RNNs
 	Concates the states and then applies a dense layer
 	"""
 
-	def __init__(self, d1):
+	def __init__(self, d1, states_manipulation_method):
+		self.states_manipulation_method = states_manipulation_method
 		self.conc = tf.keras.layers.Concatenate()
-		self.dense = tf.keras.layers.Dense(d1)
+		self.dense = linear_layer(d1, activation=None, use_time_distributed=False, use_bias=True)
+		self.add_layer = tf.keras.layers.Add()
+		self.norm_layer = tf.keras.layers.LayerNormalization()
 
 	def __call__(self, x1, x2):
-		all_x = []
-		len_x = len(x1)
-		for i in range(len_x):
-			a = x1[i]
-			b = x2[i]
-			x = self.conc([a, b])
-			x = self.dense(x)
-			all_x.append(x)
-		return all_x
+		if x1 == None or x2 == None or x1 == [] or x2 == []:
+			return None
+		elif self.states_manipulation_method == 1:
+			return None
+		elif self.states_manipulation_method == 2:
+			return x1
+		elif self.states_manipulation_method == 3:
+			return x2
+		elif self.states_manipulation_method == 4:
+			all_x = []
+			len_x = len(x1)
+			for i in range(len_x):
+				a = x1[i]
+				b = x2[i]
+				x = self.conc([a, b])
+				x = self.dense(x)
+				all_x.append(x)
+			return all_x
+		elif self.states_manipulation_method == 5:
+			all_x = []
+			len_x = len(x1)
+			for i in range(len_x):
+				a = x1[i]
+				b = x2[i]
+				x = self.add_layer([a, b])
+				x = self.dense(x)
+				all_x.append(x)
+			return all_x
+		elif self.states_manipulation_method == 6:
+			all_x = []
+			len_x = len(x1)
+			for i in range(len_x):
+				a = x1[i]
+				b = x2[i]
+				x = self.add_layer([a, b])
+				x = self.norm_layer(x)
+				x = self.dense(x)
+				all_x.append(x)
+			return all_x
+		elif self.states_manipulation_method == 7:
+			all_x = []
+			len_x = len(x1)
+			for i in range(len_x):
+				a = x1[i]
+				b = x2[i]
+				x = self.add_layer([a, b])
+				all_x.append(x)
+			return all_x
+		elif self.states_manipulation_method == 8:
+			all_x = []
+			len_x = len(x1)
+			for i in range(len_x):
+				a = x1[i]
+				b = x2[i]
+				x = self.add_layer([a, b])
+				x = self.norm_layer(x)
+				all_x.append(x)
+			return all_x		
+		else:
+			print('only 8 methods defined, returning None')
+			return None
+
+
 
 
 class MERGE_LIST(tf.keras.layers.Layer):
@@ -240,6 +283,7 @@ class rnn_unit():
 		self.all_layers_neurons_rnn = int(
 			self.all_layers_neurons/self.input_enc_rnn_depth)
 		self.all_layers_neurons_rnn = 8 * int(self.all_layers_neurons_rnn/8)
+		assert self.all_layers_neurons_rnn > 0, 'all_layers_neurons_rnn should be > 0...change all_layers_neurons or input_enc_rnn_depth in config file'
 		self.all_layers_dropout = cfg['all_layers_dropout']
 		self.rnn_location = rnn_location
 		self.cfg = cfg
@@ -252,25 +296,29 @@ class rnn_unit():
 			x = self.single_rnn_layer(x_input=input_to_layers, init_states=init_states,
 									  mid_layer=True, layername_prefix='First_')  # change
 						
-			x, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
-									hidden_layer_size=self.all_layers_neurons,
+			if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
+				x, _ = GLU_with_ADDNORM(            #---------------> fix this
+									output_layer_size=self.all_layers_neurons,
 									dropout_rate=self.all_layers_dropout,
 									use_time_distributed=False,
 									activation=None)(input_to_layers, x)
+			elif self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 2:
+				x = ADD_NORM()(input_to_layers, x)
 			
 			for i in range(0, self.input_enc_rnn_depth-2):
 				x = self.single_rnn_layer(
 					x_input=x, init_states=init_states, mid_layer=True, layername_prefix='Mid_%s_' % (i+1))
 				
-				x, _ = GLU_with_ADDNORM(
-									IF_GLU=self.cfg['IF_GLU'],
-									IF_ADDNORM=self.cfg['IF_ADDNORM'],
-									hidden_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_to_layers, x)
+
+				if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
+					x, _ = GLU_with_ADDNORM(            #---------------> fix this
+										output_layer_size=self.all_layers_neurons,
+										dropout_rate=self.all_layers_dropout,
+										use_time_distributed=False,
+										activation=None)(input_to_layers, x)
+				elif self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 2:
+					x = ADD_NORM()(input_to_layers, x)
+
 
 			return self.single_rnn_layer(x_input=x, init_states=init_states, mid_layer=False, layername_prefix='Last_')
 
