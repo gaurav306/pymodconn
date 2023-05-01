@@ -1,0 +1,404 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": [
+        "n_past",
+        "n_future",
+        "n_features_input",
+        "n_features_output",
+        "future_data_col",
+        "all_layers_neurons",
+        "all_layers_dropout",
+        "control_future_cells",
+        "if_model_image",
+        "if_model_summary",
+        "if_seed",
+        "seed",
+        "model_type_prob",
+        "loss_prob",
+        "loss",
+        "quantiles",
+        "metrics",
+        "optimizer",
+        "Adam",
+        "SGD",
+        "save_models_dir",
+        "save_results_dir",
+        "model_type",
+        "IF_NONE_GLUADDNORM_ADDNORM",
+        "IF_GRN",
+        "IFRNN_input",
+        "IFRNN_output",
+        "mha_head",
+        "dec_attn_mask",
+        "IFSELF_MHA",
+        "IFCASUAL_MHA",
+        "IFCROSS_MHA",
+        "ENCODER_MHA_DEPTH",
+        "DECODER_MHA_DEPTH",
+        "MHA_RNN",
+        "rnn_type",
+        "input_enc_rnn_depth",
+        "input_enc_rnn_bi",
+        "MERGE_STATES_METHOD",
+        "IF_TRAIN_AT_ALL",
+        "training_mode",
+        "num_of_same_run",
+        "fit_type",
+        "LOAD_MODEL",
+        "TRAIN_MODEL",
+        "PREDICT",
+        "IF_GPU",
+        "epochs",
+        "batch_size",
+        "seq_len",
+        "ifLRS",
+        "ifEarlyStop",
+        "EarlyStop_patience",
+        "EarlyStop_min_delta",
+        "EarlyStop_start_from_epoch",
+        "training_verbose",
+        "training_type",
+        "if_validation",
+        "CWR_min_lr",
+        "CWR_max_lr",
+        "CWR_steps_per_epoch",
+        "CWR_lr_decay",
+        "CWR_cycle_length",
+        "CWR_cycle_mult_factor",
+        "CWR_warmup_length",
+        "CWR_warmup_mult_factor"
+    ],
+    "properties": {
+        "n_past": {
+            "type": "integer",
+            "minimum": 672,
+            "maximum": 672
+        },
+        "n_future": {
+            "type": "integer",
+            "minimum": 96,
+            "maximum": 96
+        },
+        "n_features_input": {
+            "type": "integer",
+            "minimum": 31,
+            "maximum": 31
+        },
+        "n_features_output": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "future_data_col": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 15
+        },
+        "all_layers_neurons": {
+            "type": "integer",
+            "minimum": 128,
+            "maximum": 128
+        },
+        "all_layers_dropout": {
+            "type": "number",
+            "minimum": 0.4,
+            "maximum": 0.4
+        },
+        "control_future_cells": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 3
+        },
+        "if_model_image": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "if_model_summary": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "if_seed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "seed": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 500
+        },
+        "model_type_prob": {
+            "type": "string"
+        },
+        "loss_prob": {
+            "type": "string"
+        },
+        "loss": {
+            "type": "string"
+        },
+        "quantiles": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "metrics": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "optimizer": {
+            "type": "string"
+        },
+        "Adam": {
+            "type": "object",
+            "properties": {
+                "lr": {
+                    "type": "number"
+                },
+                "b1": {
+                    "type": "number"
+                },
+                "b2": {
+                    "type": "number"
+                },
+                "epsi": {
+                    "type": "number"
+                }
+            }
+        },
+        "SGD": {
+            "type": "object",
+            "properties": {
+                "lr": {
+                    "type": "number"
+                },
+                "momentum": {
+                    "type": "number"
+                }
+            }
+        },
+        "save_models_dir": {
+            "type": "string"
+        },
+        "save_results_dir": {
+            "type": "string"
+        },
+        "model_type": {
+            "type": "string"
+        },
+        "IF_NONE_GLUADDNORM_ADDNORM": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "IF_GRN": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "IFRNN_input": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "IFRNN_output": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "mha_head": {
+            "type": "integer",
+            "minimum": 8,
+            "maximum": 8
+        },
+        "dec_attn_mask": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "IFSELF_MHA": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "IFCASUAL_MHA": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "IFCROSS_MHA": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "ENCODER_MHA_DEPTH": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 3
+        },
+        "DECODER_MHA_DEPTH": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 3
+        },
+        "MHA_RNN": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "rnn_type": {
+            "type": "string"
+        },
+        "input_enc_rnn_depth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "input_enc_rnn_bi": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "MERGE_STATES_METHOD": {
+            "type": "integer",
+            "minimum": 4,
+            "maximum": 4
+        },
+        "IF_TRAIN_AT_ALL": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "training_mode": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "num_of_same_run": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "fit_type": {
+            "type": "string"
+        },
+        "LOAD_MODEL": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "TRAIN_MODEL": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "PREDICT": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "IF_GPU": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "epochs": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 60
+        },
+        "batch_size": {
+            "type": "integer",
+            "minimum": 256,
+            "maximum": 256
+        },
+        "seq_len": {
+            "type": "integer",
+            "minimum": 20,
+            "maximum": 20
+        },
+        "ifLRS": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "ifEarlyStop": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "EarlyStop_patience": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 15
+        },
+        "EarlyStop_min_delta": {
+            "type": "number",
+            "minimum": 0.001,
+            "maximum": 0.001
+        },
+        "EarlyStop_start_from_epoch": {
+            "type": "integer",
+            "minimum": 175,
+            "maximum": 175
+        },
+        "training_verbose": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 2
+        },
+        "training_type": {
+            "type": "string"
+        },
+        "if_validation": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        },
+        "CWR_min_lr": {
+            "type": "number",
+            "minimum": 0.0001,
+            "maximum": 0.0001
+        },
+        "CWR_max_lr": {
+            "type": "number",
+            "minimum": 0.01,
+            "maximum": 0.01
+        },
+        "CWR_steps_per_epoch": {
+            "type": "integer",
+            "minimum": 67,
+            "maximum": 67
+        },
+        "CWR_lr_decay": {
+            "type": "number",
+            "minimum": 0.9,
+            "maximum": 0.9
+        },
+        "CWR_cycle_length": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 10
+        },
+        "CWR_cycle_mult_factor": {
+            "type": "number",
+            "minimum": 1.1,
+            "maximum": 1.1
+        },
+        "CWR_warmup_length": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 3
+        },
+        "CWR_warmup_mult_factor": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
+        }
+    }
+}

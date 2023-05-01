@@ -1,0 +1,101 @@
+n_past: 672
+n_future: 96
+n_features_input: 31
+n_features_output: 1
+future_data_col: 15
+
+all_layers_neurons: 128
+all_layers_dropout: 0.4
+control_future_cells: 3
+
+if_model_image: 1
+if_model_summary: 0
+if_seed: 0
+seed: 500
+
+model_type_prob: prob
+loss_prob: nonparametric
+loss: mean_squared_error
+quantiles: [0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99]
+metrics: [mape, acc]
+optimizer: Adam
+Adam:
+  lr: 0.001
+  b1: 0.9
+  b2: 0.999
+  epsi: 1.0e-08
+SGD:
+  lr: 0.001
+  momentum: 0.9
+save_models_dir: saved_models/
+save_results_dir: saved_results/
+model_type: Full_trans_1s
+
+IF_NONE_GLUADDNORM_ADDNORM: 0  #0: None, 1: GLUADDNORM, 3: ADDNORM
+IF_GRN: 0   #0: no GRN, 1: GRN
+IFRNN_input: 1
+IFRNN_output: 1
+
+
+mha_head: 8
+dec_attn_mask: 1
+IFSELF_MHA: 0
+IFCASUAL_MHA: 0
+IFCROSS_MHA: 0
+ENCODER_MHA_DEPTH: 3
+DECODER_MHA_DEPTH: 3
+
+#-----about RNN units
+# this is order of MHA and RNN. if 1 then MHA first then RNN. if 0 then RNN first then MHA
+MHA_RNN: 0
+rnn_type: GRU
+input_enc_rnn_depth: 1
+input_enc_rnn_bi: 1
+
+#-----about merging states from Encoder_states(A) and Decoder_input_states(B) for Decoder_output init_states
+# there are 8 options:
+# 1: None
+# 2: A - Dense layer
+# 3: B - Dense layer
+# 4: A+B - Concat -> Dense layer -------------------> this is the best one
+# 5: A+B - Add -> Dense layer
+# 6: A+B - Add_Norm -> Dense layer
+# 7: A+B - Add
+# 8: A+B - Add_Norm
+MERGE_STATES_METHOD: 4
+
+
+
+
+
+
+IF_TRAIN_AT_ALL: 1
+training_mode: 1
+num_of_same_run: 1
+fit_type: fit
+LOAD_MODEL: 0
+TRAIN_MODEL: 1
+PREDICT: 1
+IF_GPU: 0
+epochs: 60
+batch_size: 256
+seq_len: 20
+ifLRS: 1
+ifEarlyStop: 0
+EarlyStop_patience: 15
+EarlyStop_min_delta: 0.001
+EarlyStop_start_from_epoch: 175
+training_verbose: 2
+training_type: model.fit
+if_validation: 1
+
+#CWR = CosineWarmRestart
+CWR_min_lr: 0.0001
+CWR_max_lr: 0.01
+CWR_steps_per_epoch: 67
+CWR_lr_decay: 0.9
+CWR_cycle_length: 10
+CWR_cycle_mult_factor: 1.1
+CWR_warmup_length: 3
+CWR_warmup_mult_factor: 1
+

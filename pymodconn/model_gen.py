@@ -18,7 +18,6 @@ class ModelClass():
         if cfg['if_seed']:
             np.random.seed(cfg['seed'])
             tf.random.set_seed(cfg['seed'])
-        self.epochs = cfg['epochs']
         self.batch_size = cfg['batch_size']
         self.save_models_dir = cfg['save_models_dir']
         self.save_results_dir = cfg['save_results_dir']
