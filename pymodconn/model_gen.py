@@ -4,8 +4,9 @@ from pymodconn.major_layers import Decoder_class
 from pymodconn.utils_layers import *
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras import backend as K
-from tensorflow.keras.models import Model
+from tensorflow import keras
+import keras.backend as K
+from keras.models import Model
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 

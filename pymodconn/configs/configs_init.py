@@ -35,6 +35,12 @@ def assert_check_configs(configs):
 	assert configs['rnn_type'] in ['LSTM', 'GRU', 'RNN'], 'rnn_type must be either LSTM, GRU or RNN'
 	assert configs['input_enc_rnn_depth'] <= 5, 'max depth of RNN units is 5'
 
+	all_attn1 = configs['IFSELF_MHA'] + configs['IFATTENTION']
+	all_attn2 = configs['IFCASUAL_MHA'] + configs['IFATTENTION']
+	all_attn3 = configs['IFCROSS_MHA'] + configs['IFATTENTION']
+
+	assert all_attn1 == 1 and all_attn2 == 1 and all_attn3 == 1, 'IFSELF_MHA, IFCASUAL_MHA, IFCROSS_MHA and IFATTENTION must be 1, i.e, only one of them can be 1 at a time'
+	
 
 def get_configs(config_filename):
 	

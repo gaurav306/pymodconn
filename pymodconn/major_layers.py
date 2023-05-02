@@ -1,5 +1,5 @@
 import tensorflow as tf
-
+from tcn import TCN
 from pymodconn.utils_layers import *
 
 K = tf.keras.backend
@@ -12,6 +12,7 @@ class Encoder_class():
 
 		self.IF_RNN = cfg['IFRNN_input']
 		self.IF_MHA = cfg['IFSELF_MHA']
+		self.IF_POS_ENCODE = cfg['IFPOS_ENCODE']
 		self.MHA_DEPTH = cfg['ENCODER_MHA_DEPTH']
 		self.IF_MASK = 0
 	
@@ -42,6 +43,11 @@ class Encoder_class():
 										self.enc_or_dec_number)
 			
 			output_cell, output_states = rnn_block(input_cell, init_states=init_states)
+
+		input_cell = output_cell
+		if self.IF_POS_ENCODE == 1 and self.IF_MHA == 1:
+			pos_encoding = positional_encoding(self.n_past, self.all_layers_neurons)
+			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_past]])
 
 		input_cell = output_cell
 		for i in range(self.MHA_DEPTH):
@@ -85,12 +91,14 @@ class Decoder_class():
 		self.n_future = cfg['n_future']
 		self.n_features_output = cfg['n_features_output']
 
+		self.IF_POS_ENCODE = cfg['IFPOS_ENCODE']
+
 		self.merge_states_units = int(
 			self.all_layers_neurons/self.cfg['input_enc_rnn_depth'])
 		self.merge_states_units = 8 * int(self.merge_states_units/8)		
 
 	def __call__(self, input, input_vk, encoder_states=None):
-		
+		attention_input1 = input_vk
 		encoder_input = tf.keras.layers.Dense(
 			self.all_layers_neurons)(input)
 
@@ -105,9 +113,22 @@ class Decoder_class():
 									self.enc_or_dec_number)
 		
 		output_cell, decoder_input_states = rnn_block_dec_in(input_cell, init_states=encoder_states)
+		attention_input2 = output_cell
+
+		''''''
+		if self.cfg['IFTCN_input'] == 1:
+			input_cell = output_cell
+			tcn_block = TCN(nb_filters=self.all_layers_neurons, return_sequences=True)
+			output_cell = tcn_block(input_cell)
+			print('tcn output shape: ', output_cell.shape)
+			
+		
+		input_cell = output_cell
+		if self.IF_POS_ENCODE == 1 and self.cfg['IFCASUAL_MHA'] == 1 and self.cfg['IFCROSS_MHA'] == 1:
+			pos_encoding = positional_encoding(self.n_future, self.all_layers_neurons)
+			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_future]])
 
 		input_cell = output_cell
-
 		for i in range(self.MHA_DEPTH):
 			casual_mha = MHA_block_class(self.cfg['IFCASUAL_MHA'],
 									False,
@@ -142,6 +163,19 @@ class Decoder_class():
 
 		output_cell, output_states = rnn_block_dec_out(input_cell, init_states = merged_states)
 		
+		if self.cfg['IFATTENTION'] == 1:
+			input_cell = output_cell
+			if self.cfg['attn_type'] == 1:
+				attention_block = tf.keras.layers.Attention()
+			elif self.cfg['attn_type'] == 2:
+				attention_block = tf.keras.layers.AdditiveAttention()
+			elif self.cfg['attn_type'] == 3:
+				print("Wrong attention type")
+			attention_output = attention_block([attention_input2, attention_input1])
+			output_cell = tf.keras.layers.Concatenate()([input_cell, attention_output])
+
+
+
 		if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
 			output_cell, _ = GLU_with_ADDNORM(            #---------------> fix this
 								output_layer_size=self.all_layers_neurons,
@@ -169,6 +203,8 @@ class MHA_block_class():
 		self.mha_depth_index = mha_depth_index
 		self.self_or_casual_or_crossMHA = self_or_casual_or_crossMHA
 		
+		self.n_past = self.cfg['n_past']
+		self.n_future = self.cfg['n_future']
 		self.mha_head = self.cfg['mha_head']
 		self.n_features_input = self.cfg['n_features_input']
 		self.all_layers_neurons = self.cfg['all_layers_neurons']	
@@ -187,6 +223,7 @@ class MHA_block_class():
 			else:
 				causal_mask = None
 			
+
 			encoder_mha = tf.keras.layers.MultiHeadAttention(
 								num_heads = self.mha_head,
 								key_dim = self.n_features_input,

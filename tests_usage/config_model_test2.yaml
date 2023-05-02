@@ -6,7 +6,7 @@ future_data_col: 15
 
 all_layers_neurons: 128
 all_layers_dropout: 0.4
-control_future_cells: 3
+control_future_cells: 1
 
 if_model_image: 1
 if_model_summary: 0
@@ -33,8 +33,6 @@ model_type: Full_trans_1s
 
 IF_NONE_GLUADDNORM_ADDNORM: 0  #0: None, 1: GLUADDNORM, 3: ADDNORM
 IF_GRN: 0   #0: no GRN, 1: GRN
-IFRNN_input: 1
-IFRNN_output: 1
 
 
 mha_head: 8
@@ -42,11 +40,18 @@ dec_attn_mask: 1
 IFSELF_MHA: 0
 IFCASUAL_MHA: 0
 IFCROSS_MHA: 0
-ENCODER_MHA_DEPTH: 3
-DECODER_MHA_DEPTH: 3
+IFPOS_ENCODE : 1
+ENCODER_MHA_DEPTH: 5
+DECODER_MHA_DEPTH: 5
+
+
 
 #-----about RNN units
 # this is order of MHA and RNN. if 1 then MHA first then RNN. if 0 then RNN first then MHA
+IFATTENTION: 1 # 0 is no attention, 1 attention
+attn_type: 2 # 1 is Luong attention, 2 is Bahdanau attention ----> preffered is 2
+IFRNN_input: 1
+IFRNN_output: 1
 MHA_RNN: 0
 rnn_type: GRU
 input_enc_rnn_depth: 1
@@ -63,6 +68,11 @@ input_enc_rnn_bi: 1
 # 7: A+B - Add
 # 8: A+B - Add_Norm
 MERGE_STATES_METHOD: 4
+
+
+#-----about TCN units
+IFTCN_input: 1
+IFTCN_output: 0
 
 
 
