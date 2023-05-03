@@ -28,10 +28,10 @@
         "IF_NONE_GLUADDNORM_ADDNORM",
         "IF_GRN",
         "mha_head",
-        "dec_attn_mask",
-        "IFSELF_MHA",
-        "IFCASUAL_MHA",
+        "IFSELF_enc_MHA",
+        "IFSELF_dec_MHA",
         "IFCROSS_MHA",
+        "IFDECODER_MHA",
         "IFPOS_ENCODE",
         "ENCODER_MHA_DEPTH",
         "DECODER_MHA_DEPTH",
@@ -44,8 +44,9 @@
         "input_enc_rnn_depth",
         "input_enc_rnn_bi",
         "MERGE_STATES_METHOD",
-        "IFTCN_input",
-        "IFTCN_output",
+        "IF_TCN_input_enc",
+        "IF_TCN_input_dec",
+        "IF_TCN_output_dec",
         "IF_TRAIN_AT_ALL",
         "training_mode",
         "num_of_same_run",
@@ -211,22 +212,22 @@
             "minimum": 8,
             "maximum": 8
         },
-        "dec_attn_mask": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "IFSELF_MHA": {
+        "IFSELF_enc_MHA": {
             "type": "integer",
             "minimum": 0,
             "maximum": 0
         },
-        "IFCASUAL_MHA": {
+        "IFSELF_dec_MHA": {
             "type": "integer",
             "minimum": 0,
             "maximum": 0
         },
         "IFCROSS_MHA": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 0
+        },
+        "IFDECODER_MHA": {
             "type": "integer",
             "minimum": 0,
             "maximum": 0
@@ -258,13 +259,13 @@
         },
         "IFRNN_input": {
             "type": "integer",
-            "minimum": 1,
-            "maximum": 1
+            "minimum": 0,
+            "maximum": 0
         },
         "IFRNN_output": {
             "type": "integer",
-            "minimum": 1,
-            "maximum": 1
+            "minimum": 0,
+            "maximum": 0
         },
         "MHA_RNN": {
             "type": "integer",
@@ -289,15 +290,20 @@
             "minimum": 4,
             "maximum": 4
         },
-        "IFTCN_input": {
+        "IF_TCN_input_enc": {
             "type": "integer",
             "minimum": 1,
             "maximum": 1
         },
-        "IFTCN_output": {
+        "IF_TCN_input_dec": {
             "type": "integer",
-            "minimum": 0,
-            "maximum": 0
+            "minimum": 1,
+            "maximum": 1
+        },
+        "IF_TCN_output_dec": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1
         },
         "IF_TRAIN_AT_ALL": {
             "type": "integer",

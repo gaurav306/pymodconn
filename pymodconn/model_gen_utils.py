@@ -68,7 +68,6 @@ class Build_utils():
 
         self.cfg = cfg
         self.rnn_type = cfg['rnn_type']
-        self.dec_attn_mask = cfg['dec_attn_mask']
 
         self.model_type = cfg['model_type']
         self.fit_type = cfg['fit_type']
@@ -79,8 +78,6 @@ class Build_utils():
         # model structure
         self.IFRNN1 = cfg['IFRNN_input']
         self.IFRNN2 = cfg['IFRNN_output']
-        self.IFSELF_MHA = cfg['IFSELF_MHA']
-        self.IFCASUAL_MHA = cfg['IFCASUAL_MHA']
         self.IFCROSS_MHA = cfg['IFCROSS_MHA']
 
         self.save_models_dir = cfg['save_models_dir']

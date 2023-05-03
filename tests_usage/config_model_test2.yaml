@@ -36,10 +36,10 @@ IF_GRN: 0   #0: no GRN, 1: GRN
 
 
 mha_head: 8
-dec_attn_mask: 1
-IFSELF_MHA: 0
-IFCASUAL_MHA: 0
+IFSELF_enc_MHA: 0
+IFSELF_dec_MHA: 0
 IFCROSS_MHA: 0
+IFDECODER_MHA: 0       # this would turn off SELF_dec_MHA and CROSS_MHA irrespective of their values
 IFPOS_ENCODE : 1
 ENCODER_MHA_DEPTH: 5
 DECODER_MHA_DEPTH: 5
@@ -50,8 +50,8 @@ DECODER_MHA_DEPTH: 5
 # this is order of MHA and RNN. if 1 then MHA first then RNN. if 0 then RNN first then MHA
 IFATTENTION: 1 # 0 is no attention, 1 attention
 attn_type: 2 # 1 is Luong attention, 2 is Bahdanau attention ----> preffered is 2
-IFRNN_input: 1
-IFRNN_output: 1
+IFRNN_input: 0
+IFRNN_output: 0
 MHA_RNN: 0
 rnn_type: GRU
 input_enc_rnn_depth: 1
@@ -71,10 +71,9 @@ MERGE_STATES_METHOD: 4
 
 
 #-----about TCN units
-IFTCN_input: 1
-IFTCN_output: 0
-
-
+IF_TCN_input_enc: 1
+IF_TCN_input_dec: 1
+IF_TCN_output_dec: 1
 
 
 

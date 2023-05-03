@@ -11,7 +11,7 @@ class Encoder_class():
 		self.enc_or_dec_number = enc_or_dec_number
 
 		self.IF_RNN = cfg['IFRNN_input']
-		self.IF_MHA = cfg['IFSELF_MHA']
+		self.IF_MHA = cfg['IFSELF_enc_MHA']
 		self.IF_POS_ENCODE = cfg['IFPOS_ENCODE']
 		self.MHA_DEPTH = cfg['ENCODER_MHA_DEPTH']
 		self.IF_MASK = 0
@@ -35,14 +35,16 @@ class Encoder_class():
 			self.all_layers_dropout/5)(encoder_input)
 		output_cell = encoder_input
 
-		if self.MHA_RNN == 0:
-			input_cell = output_cell
-			rnn_block = RNN_block_class(self.cfg['IFRNN_input'],
-										self.cfg,
-										'encoder_input',
-										self.enc_or_dec_number)
-			
-			output_cell, output_states = rnn_block(input_cell, init_states=init_states)
+		input_cell = output_cell
+		output_cell = tcn_addnorm(self.cfg, 'input_enc')(input_cell)
+
+		input_cell = output_cell
+		rnn_block = RNN_block_class(self.cfg['IFRNN_input'],
+									self.cfg,
+									'encoder_input',
+									self.enc_or_dec_number)
+		
+		output_cell, output_states = rnn_block(input_cell, init_states=init_states)
 
 		input_cell = output_cell
 		if self.IF_POS_ENCODE == 1 and self.IF_MHA == 1:
@@ -62,14 +64,6 @@ class Encoder_class():
 			output_cell = self_mha(input_cell, input_cell)
 			input_cell = output_cell
 
-		if self.MHA_RNN == 1:
-			input_cell = output_cell
-			rnn_block = RNN_block_class(self.cfg['IFRNN_input'],
-										self.cfg,
-										'encoder_input',
-										self.enc_or_dec_number)
-			
-			output_cell, output_states = rnn_block(input_cell, init_states=init_states)
 
 		output = output_cell
 		return output, output_states
@@ -107,6 +101,9 @@ class Decoder_class():
 		output_cell = encoder_input
 
 		input_cell = output_cell
+		output_cell = tcn_addnorm(self.cfg, 'input_dec')(input_cell)
+
+		input_cell = output_cell
 		rnn_block_dec_in = RNN_block_class(self.cfg['IFRNN_input'],
 									self.cfg,
 									"decoder_input",
@@ -114,44 +111,44 @@ class Decoder_class():
 		
 		output_cell, decoder_input_states = rnn_block_dec_in(input_cell, init_states=encoder_states)
 		attention_input2 = output_cell
-
-		''''''
-		if self.cfg['IFTCN_input'] == 1:
-			input_cell = output_cell
-			tcn_block = TCN(nb_filters=self.all_layers_neurons, return_sequences=True)
-			output_cell = tcn_block(input_cell)
-			print('tcn output shape: ', output_cell.shape)
-			
 		
 		input_cell = output_cell
-		if self.IF_POS_ENCODE == 1 and self.cfg['IFCASUAL_MHA'] == 1 and self.cfg['IFCROSS_MHA'] == 1:
+		if self.IF_POS_ENCODE == 1 and self.cfg['IFSELF_dec_MHA'] == 1 and self.cfg['IFCROSS_MHA'] == 1:
 			pos_encoding = positional_encoding(self.n_future, self.all_layers_neurons)
 			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_future]])
 
-		input_cell = output_cell
-		for i in range(self.MHA_DEPTH):
-			casual_mha = MHA_block_class(self.cfg['IFCASUAL_MHA'],
-									False,
-									self.cfg,
-									'decoder',
-									self.enc_or_dec_number, 
-									'casual',
-									str(i+1))        #<------------------here
-			output_cell = casual_mha(input_cell, input_cell)
-		
-			# decoder multi head attention
-			skip_connection = output_cell
+		if self.cfg['IFDECODER_MHA'] == 1:
 			input_cell = output_cell
-			cross_mha = MHA_block_class(self.cfg['IFCROSS_MHA'],
-									True,
-									self.cfg,
-									'decoder',
-									self.enc_or_dec_number, 
-									'cross',
-									str(i+1))        #<------------------here
-			output_cell = cross_mha(input_cell, input_vk)
+			for i in range(self.MHA_DEPTH):
+				casual_mha = MHA_block_class(self.cfg['IFSELF_dec_MHA'],
+										False,
+										self.cfg,
+										'decoder',
+										self.enc_or_dec_number, 
+										'self',
+										str(i+1))        #<------------------here
+				output_cell = casual_mha(input_cell, input_cell)
+			
+				# decoder multi head attention
+				skip_connection = output_cell
+				input_cell = output_cell
+				cross_mha = MHA_block_class(self.cfg['IFCROSS_MHA'],
+										True,
+										self.cfg,
+										'decoder',
+										self.enc_or_dec_number, 
+										'cross',
+										str(i+1))        #<------------------here
+				output_cell = cross_mha(input_cell, input_vk)
+				input_cell = output_cell
+		else:
 			input_cell = output_cell
+			input_vk = tf.keras.layers.Reshape((self.n_future, -1))(input_vk)
+			output_cell = tf.keras.layers.Concatenate()([input_cell, input_vk])
+			output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
 
+		input_cell = output_cell
+		output_cell = tcn_addnorm(self.cfg, 'output_dec')(input_cell)
 
 		input_cell = output_cell
 		rnn_block_dec_out = RNN_block_class(self.cfg['IFRNN_output'],
@@ -177,7 +174,7 @@ class Decoder_class():
 
 
 		if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
-			output_cell, _ = GLU_with_ADDNORM(            #---------------> fix this
+			output_cell, _ = GLU_with_ADDNORM(            
 								output_layer_size=self.all_layers_neurons,
 								dropout_rate=self.all_layers_dropout,
 								use_time_distributed=False,
@@ -194,14 +191,14 @@ class Decoder_class():
 
 
 class MHA_block_class():
-	def __init__(self, IF_MHA, IF_GRN, cfg, enc_or_dec, enc_or_dec_number, self_or_casual_or_crossMHA, mha_depth_index):
+	def __init__(self, IF_MHA, IF_GRN, cfg, enc_or_dec, enc_or_dec_number, self_or_crossMHA, mha_depth_index):
 		self.cfg = cfg
 		self.enc_or_dec = enc_or_dec
 		self.enc_or_dec_number = enc_or_dec_number
 		self.IF_MHA = IF_MHA
 		self.IF_GRN_mha = IF_GRN
 		self.mha_depth_index = mha_depth_index
-		self.self_or_casual_or_crossMHA = self_or_casual_or_crossMHA
+		self.self_or_crossMHA = self_or_crossMHA
 		
 		self.n_past = self.cfg['n_past']
 		self.n_future = self.cfg['n_future']
@@ -210,19 +207,12 @@ class MHA_block_class():
 		self.all_layers_neurons = self.cfg['all_layers_neurons']	
 		self.all_layers_dropout = self.cfg['all_layers_dropout']
 		self.IF_GRN = self.cfg['IF_GRN']
-		self.dec_attn_mask = self.cfg['dec_attn_mask']
 
 
 	def __call__(self, input_q, input_kv):
 		if self.IF_MHA:
 			
-			self.mha_layer_name = self.enc_or_dec + '_' + str(self.enc_or_dec_number) + '_'+ str(self.self_or_casual_or_crossMHA) + 'MHA-' + str(self.mha_depth_index)
-
-			if self.self_or_casual_or_crossMHA == 'casual' and self.dec_attn_mask == 1:
-				causal_mask = get_causal_attention_mask()(input_q)
-			else:
-				causal_mask = None
-			
+			self.mha_layer_name = self.enc_or_dec + '_' + str(self.enc_or_dec_number) + '_'+ str(self.self_or_crossMHA) + 'MHA-' + str(self.mha_depth_index)
 
 			encoder_mha = tf.keras.layers.MultiHeadAttention(
 								num_heads = self.mha_head,
@@ -233,11 +223,10 @@ class MHA_block_class():
 			output_cell = encoder_mha(query=input_q,
 										key=input_kv,
 										value=input_kv,
-										attention_mask=causal_mask,
 										training=True)
 
 			if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
-				output_cell, _ = GLU_with_ADDNORM(            #---------------> fix this
+				output_cell, _ = GLU_with_ADDNORM(            
 									output_layer_size=self.all_layers_neurons,
 									dropout_rate=self.all_layers_dropout,
 									use_time_distributed=False,
@@ -287,7 +276,7 @@ class RNN_block_class():
 			if self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 0:
 				output_cell = linear_layer(self.all_layers_neurons)(output_cell)
 			elif self.cfg['IF_NONE_GLUADDNORM_ADDNORM'] == 1:
-				output_cell, _ = GLU_with_ADDNORM(            #---------------> fix this
+				output_cell, _ = GLU_with_ADDNORM(            
 									output_layer_size=self.all_layers_neurons,
 									dropout_rate=self.all_layers_dropout,
 									use_time_distributed=False,
@@ -310,3 +299,39 @@ class RNN_block_class():
 			output_states = None
 		
 		return output_cell, output_states
+
+
+
+class tcn_addnorm():
+	def __init__(self, cfg, location):
+		self.cfg = cfg
+		self.location = location
+		assert self.location in ['input_enc', 'input_dec', 'output_dec'], 'location for TCN must be input_enc, input_dec or output_dec'
+		self.all_layers_neurons = self.cfg['all_layers_neurons']
+		self.all_layers_dropout = self.cfg['all_layers_dropout']
+
+		self.IF_TCN = self.cfg['IF_TCN_' + self.location]
+
+
+	
+	def __call__(self, input_cell):
+		if self.IF_TCN:
+			tcn_block = TCN(nb_filters=self.all_layers_neurons, 
+		   					kernel_size = 5, 
+							nb_stacks = 3,
+							dilations=[1, 2, 4, 8, 16, 32],
+							return_sequences = True, 
+							dropout_rate = 0.05,  # ----> similar to recurrent_dropout in LSTM
+							use_layer_norm = True,
+							name='TCN_' + self.location)
+			
+			output_cell = tcn_block(input_cell)
+			output_cell, _ = GLU_with_ADDNORM(            
+								output_layer_size=self.all_layers_neurons,
+								dropout_rate=self.all_layers_dropout,
+								use_time_distributed=False,
+								activation=None)(input_cell, output_cell)
+
+			return output_cell
+		else:
+			return input_cell
