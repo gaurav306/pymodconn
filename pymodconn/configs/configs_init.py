@@ -88,12 +88,10 @@ def assert_check_edit_configs(configs):
 					except:
 						continue
 
-				all_try1 = ['IF_POS_ENCODE',
-							'IF_SELF_CROSS_MHA',
+				all_try1 = ['IF_SELF_CROSS_MHA',
 							'SELF_CROSS_MHA_depth']
 				
-				all_except1 = ['IF_ALL_POS_ENCODE',
-							   'IF_ALL_MHA',
+				all_except1 = ['IF_ALL_MHA',
 							   'ALL_MHA_DEPTH']
 				
 				for i in range(len(all_try1)):

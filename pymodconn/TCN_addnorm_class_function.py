@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tcn import TCN
+from pymodconn.keras_tcn import TCN
 from pymodconn.utils_layers import GLU_with_ADDNORM, ADD_NORM
 
 K = tf.keras.backend

@@ -188,9 +188,6 @@
                 "IF_ALL_RNN": {
                     "type": "integer"
                 },
-                "IF_ALL_POS_ENCODE": {
-                    "type": "integer"
-                },
                 "IF_ALL_MHA": {
                     "type": "integer"
                 },
