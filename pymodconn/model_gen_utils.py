@@ -30,18 +30,9 @@ class Build_utils():
     """
 
     def __init__(self, cfg, current_dt):
-        if cfg['if_seed']:
-            np.random.seed(cfg['seed'])
-            tf.random.set_seed(cfg['seed'])
-        self.epochs = cfg['epochs']
+        self.cfg = cfg
+        self.current_dt = current_dt
         self.batch_size = cfg['batch_size']
-        self.future_data_col = cfg['future_data_col']
-        self.n_past = cfg['n_past']
-        self.n_features_input = cfg['n_features_input']
-        self.all_layers_neurons = cfg['all_layers_neurons']
-        self.all_layers_dropout = cfg['all_layers_dropout']
-        self.n_future = cfg['n_future']
-        self.n_features_output = cfg['n_features_output']
         self.optimizer = cfg['optimizer']  # new
         self.SGD_lr = cfg['SGD']['lr']  # new
         self.SGD_mom = cfg['SGD']['momentum']  # new
@@ -64,34 +55,15 @@ class Build_utils():
             self.q)
 
         self.metrics = cfg['metrics']
-        self.mha_head = cfg['mha_head']
 
-        self.cfg = cfg
-        self.rnn_type = cfg['rnn_type']
-
-        self.model_type = cfg['model_type']
-        self.fit_type = cfg['fit_type']
-        self.seq_len = cfg['seq_len']
         self.if_save_model_image = cfg['if_model_image']
         self.if_model_summary = cfg['if_model_summary']
 
-        # model structure
-        self.IFRNN1 = cfg['IFRNN_input']
-        self.IFRNN2 = cfg['IFRNN_output']
-        self.IFCROSS_MHA = cfg['IFCROSS_MHA']
-
         self.save_models_dir = cfg['save_models_dir']
-        self.save_results_dir = cfg['save_results_dir']
-        self.save_training_history_file = os.path.join(
-            self.save_results_dir, '%s.csv' % (current_dt))
-        self.save_training_history = os.path.join(
-            self.save_results_dir, '%s_history.png' % (current_dt))
-        self.save_hf5_name = os.path.join(
-            self.save_models_dir, '%s.h5' % (current_dt))
         self.save_modelimage_name = os.path.join(
-            self.save_models_dir, '%s_modelimage.png' % (current_dt))
+            self.save_models_dir, '%s_modelimage.png' % (self.current_dt))
         self.save_modelsummary_name = os.path.join(
-            self.save_models_dir, '%s_modelsummary.txt' % (current_dt))
+            self.save_models_dir, '%s_modelsummary.txt' % (self.current_dt))
 
     def CVRMSE_Q50_prob_nonparametric(self, y_true, y_pred):
         return K.sqrt(K.mean(K.square(y_pred[:, :, :, 3] - y_true)))/(K.mean(y_true))
@@ -144,21 +116,20 @@ class Build_utils():
             self.model.summary()
 
         self.trainable_count = count_params(model.trainable_weights)
-        '''
         self.GET_MODEL_SIZE_GB = get_model_memory_usage(
             self.batch_size, self.model)
         print('Trainable parameters in the model : %d' % self.trainable_count)
-        '''
+        
         with open(self.save_modelsummary_name, 'w') as f:
             self.model.summary(print_fn=lambda x: f.write(x + '\n'), 
                                line_length = 250, 
                                expand_nested=True,
                                show_trainable=True)
-        '''
+
         with open(self.save_modelsummary_name, 'a') as f:
             f.write('_' * 25 + '\n')
             f.write('Model size in GB : %f' % self.GET_MODEL_SIZE_GB)
-        '''
+        
         if self.if_save_model_image:
             print('Saving model as %s' % self.save_modelimage_name)
             plot_model(self.model, to_file=self.save_modelimage_name,
@@ -180,7 +151,7 @@ def get_model_memory_usage(batch_size, model):
         for s in out_shape:
             if s is None:
                 continue
-            single_layer_mem *= s
+            single_layer_mem  = single_layer_mem * s
         shapes_mem_count += single_layer_mem
 
     trainable_count = np.sum([K.count_params(p)

@@ -17,20 +17,10 @@ def runmain(time_dt, configs_data):
 	#print('model_class.model.inputs: ',model_class.model.inputs)
 	#print('model_class.model.outputs: ',model_class.model.outputs)
 
-create_schema_from_yaml('config_model_test2.yaml', '..\pymodconn\configs\schema_validation.json')
-shutil.copy('config_model_test2.yaml', '..\pymodconn\configs\default_config.yaml')
+create_schema_from_yaml('new_config.yaml', '..\pymodconn\configs\schema_validation.json')
+shutil.copy('new_config.yaml', '..\pymodconn\configs\default_config.yaml')
 
-configs = get_configs('config_model_test2.yaml')
-
-
-
-ident = 'Decoders-%s_MHAfirst-%s_RNN-%s_Depth-%s_bi-%s_NNs-%s_' % (
-		configs['control_future_cells'],	
-		configs['MHA_RNN'],
-		configs['rnn_type'],
-		configs['input_enc_rnn_depth'],
-		configs['input_enc_rnn_bi'],
-		configs['all_layers_neurons'])
+configs = get_configs('new_config.yaml')
 
 ident = 'test_'
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])

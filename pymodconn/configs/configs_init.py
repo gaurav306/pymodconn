@@ -61,7 +61,7 @@ def get_configs(config_filename):
 	# Validate the config file
 	schema_path = pkg_resources.resource_filename('pymodconn', 'configs/schema_validation.json')
 	validate_config(configs, schema_path)
-	assert_check_configs(configs)
+	#assert_check_configs(configs)
 
 	# Returning the configs
 	return configs

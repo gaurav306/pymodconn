@@ -2,14 +2,6 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "required": [
-        "n_past",
-        "n_future",
-        "n_features_input",
-        "n_features_output",
-        "future_data_col",
-        "all_layers_neurons",
-        "all_layers_dropout",
-        "control_future_cells",
         "if_model_image",
         "if_model_summary",
         "if_seed",
@@ -23,99 +15,19 @@
         "Adam",
         "SGD",
         "save_models_dir",
-        "save_results_dir",
-        "model_type",
-        "IF_NONE_GLUADDNORM_ADDNORM",
-        "IF_GRN",
-        "mha_head",
-        "IFSELF_enc_MHA",
-        "IFSELF_dec_MHA",
-        "IFCROSS_MHA",
-        "IFDECODER_MHA",
-        "IFPOS_ENCODE",
-        "ENCODER_MHA_DEPTH",
-        "DECODER_MHA_DEPTH",
-        "IFATTENTION",
-        "attn_type",
-        "IFRNN_input",
-        "IFRNN_output",
-        "MHA_RNN",
-        "rnn_type",
-        "input_enc_rnn_depth",
-        "input_enc_rnn_bi",
-        "MERGE_STATES_METHOD",
-        "IF_TCN_input_enc",
-        "IF_TCN_input_dec",
-        "IF_TCN_output_dec",
-        "IF_TRAIN_AT_ALL",
-        "training_mode",
-        "num_of_same_run",
-        "fit_type",
-        "LOAD_MODEL",
-        "TRAIN_MODEL",
-        "PREDICT",
-        "IF_GPU",
-        "epochs",
         "batch_size",
-        "seq_len",
-        "ifLRS",
-        "ifEarlyStop",
-        "EarlyStop_patience",
-        "EarlyStop_min_delta",
-        "EarlyStop_start_from_epoch",
-        "training_verbose",
-        "training_type",
-        "if_validation",
-        "CWR_min_lr",
-        "CWR_max_lr",
-        "CWR_steps_per_epoch",
-        "CWR_lr_decay",
-        "CWR_cycle_length",
-        "CWR_cycle_mult_factor",
-        "CWR_warmup_length",
-        "CWR_warmup_mult_factor"
+        "n_past",
+        "n_future",
+        "known_past_features",
+        "unknown_future_features",
+        "known_future_features",
+        "control_future_cells",
+        "all_layers_neurons",
+        "all_layers_dropout",
+        "encoder",
+        "decoder"
     ],
     "properties": {
-        "n_past": {
-            "type": "integer",
-            "minimum": 672,
-            "maximum": 672
-        },
-        "n_future": {
-            "type": "integer",
-            "minimum": 96,
-            "maximum": 96
-        },
-        "n_features_input": {
-            "type": "integer",
-            "minimum": 31,
-            "maximum": 31
-        },
-        "n_features_output": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "future_data_col": {
-            "type": "integer",
-            "minimum": 15,
-            "maximum": 15
-        },
-        "all_layers_neurons": {
-            "type": "integer",
-            "minimum": 128,
-            "maximum": 128
-        },
-        "all_layers_dropout": {
-            "type": "number",
-            "minimum": 0.4,
-            "maximum": 0.4
-        },
-        "control_future_cells": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
         "if_model_image": {
             "type": "integer",
             "minimum": 1,
@@ -191,250 +103,264 @@
         "save_models_dir": {
             "type": "string"
         },
-        "save_results_dir": {
-            "type": "string"
-        },
-        "model_type": {
-            "type": "string"
-        },
-        "IF_NONE_GLUADDNORM_ADDNORM": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IF_GRN": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "mha_head": {
-            "type": "integer",
-            "minimum": 8,
-            "maximum": 8
-        },
-        "IFSELF_enc_MHA": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IFSELF_dec_MHA": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IFCROSS_MHA": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IFDECODER_MHA": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IFPOS_ENCODE": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "ENCODER_MHA_DEPTH": {
-            "type": "integer",
-            "minimum": 5,
-            "maximum": 5
-        },
-        "DECODER_MHA_DEPTH": {
-            "type": "integer",
-            "minimum": 5,
-            "maximum": 5
-        },
-        "IFATTENTION": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "attn_type": {
-            "type": "integer",
-            "minimum": 2,
-            "maximum": 2
-        },
-        "IFRNN_input": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "IFRNN_output": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "MHA_RNN": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "rnn_type": {
-            "type": "string"
-        },
-        "input_enc_rnn_depth": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "input_enc_rnn_bi": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "MERGE_STATES_METHOD": {
-            "type": "integer",
-            "minimum": 4,
-            "maximum": 4
-        },
-        "IF_TCN_input_enc": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "IF_TCN_input_dec": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "IF_TCN_output_dec": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "IF_TRAIN_AT_ALL": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "training_mode": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "num_of_same_run": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "fit_type": {
-            "type": "string"
-        },
-        "LOAD_MODEL": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "TRAIN_MODEL": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "PREDICT": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
-        },
-        "IF_GPU": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "epochs": {
-            "type": "integer",
-            "minimum": 60,
-            "maximum": 60
-        },
         "batch_size": {
             "type": "integer",
-            "minimum": 256,
-            "maximum": 256
+            "minimum": 32,
+            "maximum": 32
         },
-        "seq_len": {
+        "n_past": {
             "type": "integer",
-            "minimum": 20,
-            "maximum": 20
+            "minimum": 672,
+            "maximum": 672
         },
-        "ifLRS": {
+        "n_future": {
+            "type": "integer",
+            "minimum": 96,
+            "maximum": 96
+        },
+        "known_past_features": {
+            "type": "integer",
+            "minimum": 31,
+            "maximum": 31
+        },
+        "unknown_future_features": {
             "type": "integer",
             "minimum": 1,
             "maximum": 1
         },
-        "ifEarlyStop": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 0
-        },
-        "EarlyStop_patience": {
+        "known_future_features": {
             "type": "integer",
             "minimum": 15,
             "maximum": 15
         },
-        "EarlyStop_min_delta": {
-            "type": "number",
-            "minimum": 0.001,
-            "maximum": 0.001
-        },
-        "EarlyStop_start_from_epoch": {
-            "type": "integer",
-            "minimum": 175,
-            "maximum": 175
-        },
-        "training_verbose": {
-            "type": "integer",
-            "minimum": 2,
-            "maximum": 2
-        },
-        "training_type": {
-            "type": "string"
-        },
-        "if_validation": {
+        "control_future_cells": {
             "type": "integer",
             "minimum": 1,
             "maximum": 1
         },
-        "CWR_min_lr": {
-            "type": "number",
-            "minimum": 0.0001,
-            "maximum": 0.0001
-        },
-        "CWR_max_lr": {
-            "type": "number",
-            "minimum": 0.01,
-            "maximum": 0.01
-        },
-        "CWR_steps_per_epoch": {
+        "all_layers_neurons": {
             "type": "integer",
-            "minimum": 67,
-            "maximum": 67
+            "minimum": 128,
+            "maximum": 128
         },
-        "CWR_lr_decay": {
+        "all_layers_dropout": {
             "type": "number",
-            "minimum": 0.9,
-            "maximum": 0.9
+            "minimum": 0.4,
+            "maximum": 0.4
         },
-        "CWR_cycle_length": {
-            "type": "integer",
-            "minimum": 10,
-            "maximum": 10
+        "encoder": {
+            "type": "object",
+            "properties": {
+                "TCN_encoder_input": {
+                    "type": "object",
+                    "properties": {
+                        "IF_TCN_encoder_input": {
+                            "type": "integer"
+                        },
+                        "kernel_size_encoder_input": {
+                            "type": "integer"
+                        },
+                        "nb_stacks_encoder_input": {
+                            "type": "integer"
+                        },
+                        "dilations_encoder_input": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "RNN_block_encoder_input": {
+                    "type": "object",
+                    "properties": {
+                        "IF_RNN_encoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_block_encoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_GRN_block_encoder_input": {
+                            "type": "integer"
+                        },
+                        "rnn_depth_encoder_input": {
+                            "type": "integer"
+                        },
+                        "rnn_type_encoder_input": {
+                            "type": "string"
+                        },
+                        "IF_birectionalRNN_encoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_encoder_input": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "IF_POS_ENCODE_encoder_input": {
+                    "type": "integer"
+                },
+                "self_MHA_block_encoder": {
+                    "type": "object",
+                    "properties": {
+                        "MHA_depth_encoder": {
+                            "type": "integer"
+                        },
+                        "IF_MHA_encoder": {
+                            "type": "integer"
+                        },
+                        "MHA_head_encoder": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_encoder": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
         },
-        "CWR_cycle_mult_factor": {
-            "type": "number",
-            "minimum": 1.1,
-            "maximum": 1.1
-        },
-        "CWR_warmup_length": {
-            "type": "integer",
-            "minimum": 3,
-            "maximum": 3
-        },
-        "CWR_warmup_mult_factor": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 1
+        "decoder": {
+            "type": "object",
+            "properties": {
+                "TCN_decoder_input": {
+                    "type": "object",
+                    "properties": {
+                        "IF_TCN_decoder_input": {
+                            "type": "integer"
+                        },
+                        "kernel_size_decoder_input": {
+                            "type": "integer"
+                        },
+                        "nb_stacks_decoder_input": {
+                            "type": "integer"
+                        },
+                        "dilations_decoder_input": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "RNN_block_decoder_input": {
+                    "type": "object",
+                    "properties": {
+                        "IF_RNN_decoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_block_decoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_GRN_block_decoder_input": {
+                            "type": "integer"
+                        },
+                        "rnn_depth_decoder_input": {
+                            "type": "integer"
+                        },
+                        "rnn_type_decoder_input": {
+                            "type": "string"
+                        },
+                        "IF_birectionalRNN_decoder_input": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_decoder_input": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "IF_POS_ENCODE_decoder_input": {
+                    "type": "integer"
+                },
+                "IF_DECODER_MHA": {
+                    "type": "integer"
+                },
+                "MHA_depth_decoder": {
+                    "type": "integer"
+                },
+                "self_MHA_block_decoder": {
+                    "type": "object",
+                    "properties": {
+                        "IF_MHA_decoder": {
+                            "type": "integer"
+                        },
+                        "MHA_head_decoder": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_decoder": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "cross_MHA_block_decoder": {
+                    "type": "object",
+                    "properties": {
+                        "IF_MHA_decoder": {
+                            "type": "integer"
+                        },
+                        "MHA_head_decoder": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_decoder": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "TCN_decoder_output": {
+                    "type": "object",
+                    "properties": {
+                        "IF_TCN_decoder_output": {
+                            "type": "integer"
+                        },
+                        "kernel_size_decoder_output": {
+                            "type": "integer"
+                        },
+                        "nb_stacks_decoder_output": {
+                            "type": "integer"
+                        },
+                        "dilations_decoder_output": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "RNN_block_decoder_output": {
+                    "type": "object",
+                    "properties": {
+                        "IF_RNN_decoder_output": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_block_decoder_output": {
+                            "type": "integer"
+                        },
+                        "IF_GRN_block_decoder_output": {
+                            "type": "integer"
+                        },
+                        "rnn_depth_decoder_output": {
+                            "type": "integer"
+                        },
+                        "rnn_type_decoder_output": {
+                            "type": "string"
+                        },
+                        "IF_birectionalRNN_decoder_output": {
+                            "type": "integer"
+                        },
+                        "IF_NONE_GLUADDNORM_ADDNORM_deep_decoder_output": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "MERGE_STATES_METHOD": {
+                    "type": "integer"
+                },
+                "IFATTENTION": {
+                    "type": "integer"
+                },
+                "attn_type": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }
