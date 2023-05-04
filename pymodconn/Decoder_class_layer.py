@@ -23,7 +23,7 @@ class Decoder_class():
 		self.all_layers_neurons = self.cfg['all_layers_neurons']
 		self.all_layers_dropout = self.cfg['all_layers_dropout']
 
-		self.merge_states_units = int(self.all_layers_neurons/self.cfg['decoder']['RNN_block_decoder_output']['rnn_depth_decoder_output'])
+		self.merge_states_units = int(self.all_layers_neurons/self.cfg['decoder']['RNN_block_output']['rnn_depth'])
 		self.merge_states_units = 8 * int(self.merge_states_units/8)		
 
 	def __call__(self, input, input_vk, encoder_states=None):
@@ -43,27 +43,30 @@ class Decoder_class():
 		# TCN layer with addnorm and GLU at input of decoder aka TCN_decoder_input 
 		# Settings in config file under cfg['decoder']['TCN_' + self.location]
 		input_cell = output_cell
-		output_cell = TCN_addnorm_class(self.cfg, 'decoder', 'decoder_input')(input_cell)
+		output_cell = TCN_addnorm_class(self.cfg, 
+				  						'decoder', 
+										'input',
+										self.enc_or_dec_number)(input_cell)
 
 		# RNN layer with addnorm and GLU at input of decoder
 		input_cell = output_cell
 		output_cell, decoder_input_states = RNN_block_class(self.cfg,
 						      								'decoder',
-															"decoder_input",
+															"input",
 															self.enc_or_dec_number)(input_cell, init_states=encoder_states)
 		# attention_input2 will be used in attention layer
 		attention_input2 = output_cell
 		
 		# Positional encoding for DECODER MHA 
 		input_cell = output_cell
-		if self.cfg['decoder']['IF_POS_ENCODE_decoder_input'] == 1 and self.cfg['decoder']['IF_DECODER_MHA'] == 1:
+		if self.cfg['decoder']['IF_POS_ENCODE'] == 1 and self.cfg['decoder']['IF_SELF_CROSS_MHA'] == 1:
 			pos_encoding = positional_encoding(self.n_future, self.all_layers_neurons)
 			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_future]])
 
 		# MHA layer for decoder, self and cross attention
-		if self.cfg['decoder']['IF_DECODER_MHA'] == 1:
+		if self.cfg['decoder']['IF_SELF_CROSS_MHA'] == 1:
 			input_cell = output_cell
-			for i in range(self.cfg['decoder']['MHA_depth_decoder']):
+			for i in range(self.cfg['decoder']['SELF_CROSS_MHA_depth']):
 				output_cell = MHA_block_class(self.cfg,
 											'decoder',
 											self.enc_or_dec_number, 
@@ -85,7 +88,10 @@ class Decoder_class():
 
 		# TCN layer with addnorm and GLU at output of decoder aka TCN_decoder_output
 		input_cell = output_cell
-		output_cell = TCN_addnorm_class(self.cfg, 'decoder', 'decoder_output')(input_cell)
+		output_cell = TCN_addnorm_class(self.cfg, 
+				  						'decoder', 
+										'output',
+										self.enc_or_dec_number)(input_cell)
 
 		# STATES_MANIPULATION_BLOCK layer to merge encoder_input RNN states and decoder_input RNN states
 		input_cell = output_cell
@@ -95,11 +101,11 @@ class Decoder_class():
 		# RNN layer with addnorm and GLU at output of decoder
 		output_cell, _  = RNN_block_class(self.cfg,
 				      						'decoder',
-											"decoder_output",
+											"output",
 											self.enc_or_dec_number)(input_cell, init_states = merged_states)
 		
 		# attention layer
-		if self.cfg['decoder']['IFATTENTION'] == 1:
+		if self.cfg['decoder']['IF_ATTENTION'] == 1:
 			input_cell = output_cell
 			if self.cfg['decoder']['attn_type'] == 1:
 				attention_block = tf.keras.layers.Attention()

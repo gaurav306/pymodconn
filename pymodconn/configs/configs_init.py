@@ -21,7 +21,8 @@ def read_write_yaml(filename, mode, data_yaml):
 			yaml.dump(data_yaml, yamlfile)
 
 
-def assert_check_configs(configs):
+def assert_check_edit_configs(configs):
+	'''
 	assert configs['optimizer'] == 'Adam' or configs['optimizer'] == 'SGD', 'Adam must be either Adam or SGD'
 	assert configs['model_type_prob'] == 'prob' or configs[
 		'model_type_prob'] == 'nonprob', 'model_type_prob must be either prob or nonprob'
@@ -40,7 +41,70 @@ def assert_check_configs(configs):
 	all_attn3 = configs['IFCROSS_MHA'] + configs['IFATTENTION']
 
 	assert all_attn1 == 1 and all_attn2 == 1 and all_attn3 == 1, 'IFSELF_MHA, IFCASUAL_MHA, IFCROSS_MHA and IFATTENTION must be 1, i.e, only one of them can be 1 at a time'
-	
+	'''
+	if configs['IF_SIMPLE_MODEL']['IF'] == 1:
+
+		for enc_dec in ['encoder', 'decoder']:
+			for block in ['TCN_input', 'RNN_block_input', 'self_MHA_block', 'cross_MHA_block', 'TCN_output', 'RNN_block_output']:
+				
+				all_try = ['IF_NONE_GLUADDNORM_ADDNORM_block',
+	       					'IF_NONE_GLUADDNORM_ADDNORM_deep',
+						    'IF_NONE_GLUADDNORM_ADDNORM_TCN',
+						    'IF_GRN_block',
+						    'IF_RNN',
+						    'IF_MHA',
+						    'IF_TCN',
+						    'rnn_depth',
+						    'rnn_type',
+						    'IF_birectionalRNN',
+							'MHA_head',
+							'MHA_depth',
+							'kernel_size',
+							'nb_stacks',
+							'dilations']
+				
+				all_except = ['IF_ALL_NONE_GLUADDNORM_ADDNORM',
+							  'IF_ALL_NONE_GLUADDNORM_ADDNORM',
+							  'IF_ALL_NONE_GLUADDNORM_ADDNORM',
+							  'IF_ALL_GRN',
+							  'IF_ALL_RNN',
+							  'IF_ALL_MHA',
+							  'IF_ALL_TCN',
+							  'ALL_RNN_DEPTH',
+							  'ALL_RNN_TYPE',
+							  'ALL_RNN_BIDIRECTIONAL',
+							  'ALL_MHA_HEAD',
+							  'ALL_MHA_DEPTH',
+							  'ALL_KERNEL_SIZE',
+							  'ALL_NB_STACKS',
+							  'ALL_DILATIONS']
+		  		
+				for i in range(len(all_try)):
+					try:
+						x = configs[enc_dec][block][all_try[i]]
+						if x == 1:
+							configs[enc_dec][block][all_try[i]] = configs['IF_SIMPLE_MODEL'][all_except[i]]
+							
+					except:
+						continue
+
+				all_try1 = ['IF_POS_ENCODE',
+							'IF_SELF_CROSS_MHA',
+							'SELF_CROSS_MHA_depth']
+				
+				all_except1 = ['IF_ALL_POS_ENCODE',
+							   'IF_ALL_MHA',
+							   'ALL_MHA_DEPTH']
+				
+				for i in range(len(all_try1)):
+					try:
+						x = configs[enc_dec][all_try1[i]]
+						if x == 1:
+							configs[enc_dec][all_try1[i]] = configs['IF_SIMPLE_MODEL'][all_except1[i]]
+					except:
+						continue
+	return configs
+
 
 def get_configs(config_filename):
 	
@@ -61,7 +125,7 @@ def get_configs(config_filename):
 	# Validate the config file
 	schema_path = pkg_resources.resource_filename('pymodconn', 'configs/schema_validation.json')
 	validate_config(configs, schema_path)
-	#assert_check_configs(configs)
+	configs = assert_check_edit_configs(configs)
 
 	# Returning the configs
 	return configs

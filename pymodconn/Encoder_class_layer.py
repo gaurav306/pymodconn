@@ -36,24 +36,27 @@ class Encoder_class():
 		# TCN layer with addnorm and GLU at input of encoder aka TCN_encoder_input 
 		# Settings in config file under cfg['encoder']['TCN_' + self.location]
 		input_cell = output_cell
-		output_cell = TCN_addnorm_class(self.cfg, 'encoder', 'encoder_input')(input_cell)
+		output_cell = TCN_addnorm_class(self.cfg, 
+				  						'encoder', 
+										'input',
+										self.enc_or_dec_number)(input_cell)
 
 		# RNN layer with addnorm and GLU at input of encoder
 		input_cell = output_cell
 		output_cell, output_states = RNN_block_class(self.cfg,
 					       							'encoder',
-													'encoder_input',
+													'input',
 													self.enc_or_dec_number)(input_cell, init_states=init_states)
 		
 		# Positional encoding for ENCODER MHA 
 		input_cell = output_cell
-		if self.cfg['encoder']['IF_POS_ENCODE_encoder_input'] == 1 and self.cfg['encoder']['self_MHA_block_encoder']['IF_MHA_encoder'] == 1:
+		if self.cfg['encoder']['IF_POS_ENCODE'] == 1 and self.cfg['encoder']['self_MHA_block']['IF_MHA'] == 1:
 			pos_encoding = positional_encoding(self.n_past, self.all_layers_neurons)  				
 			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_past]])
 
 		# MHA layer with addnorm and GLU at input of encoder
 		input_cell = output_cell
-		for i in range(self.cfg['encoder']['self_MHA_block_encoder']['MHA_depth_encoder']):
+		for i in range(self.cfg['encoder']['self_MHA_block']['MHA_depth']):
 			output_cell = MHA_block_class(self.cfg,
 									   'encoder',
 										self.enc_or_dec_number, 

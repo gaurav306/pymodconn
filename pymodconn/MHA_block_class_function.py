@@ -10,23 +10,19 @@ class MHA_block_class():
 		self.cfg = cfg
 		self.enc_or_dec = enc_or_dec
 		assert self.enc_or_dec in ['encoder', 'decoder'], 'enc_or_dec must be one of encoder, decoder'
-		
 		self.enc_or_dec_number = enc_or_dec_number
-		
 		self.self_or_crossMHA = self_or_crossMHA
 		assert self.self_or_crossMHA in ['self', 'cross'], 'self_or_crossMHA must be one of self, cross'
-
 		self.mha_depth_index = mha_depth_index
 		
-		self.IF_MHA = self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block_' + self.enc_or_dec]   
-
-		self.mha_head = self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block_' + self.enc_or_dec]['MHA_head_' + self.enc_or_dec]
+		self.IF_GRN_block 				= self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block']['IF_GRN_block']
+		self.IF_MHA 					= self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block']['IF_MHA']
+		self.mha_head 					= self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block']['MHA_head']
+		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block']['IF_NONE_GLUADDNORM_ADDNORM_deep']
 		
-		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec][self.self_or_crossMHA +'_MHA_block_' + self.enc_or_dec]['IF_NONE_GLUADDNORM_ADDNORM_deep_'  + self.enc_or_dec]
-		
-		self.known_past_features = cfg['known_past_features']
-		self.all_layers_neurons = cfg['all_layers_neurons']
-		self.all_layers_dropout = cfg['all_layers_dropout']
+		self.known_past_features 		= self.cfg['known_past_features']
+		self.all_layers_neurons 		= self.cfg['all_layers_neurons']
+		self.all_layers_dropout 		= self.cfg['all_layers_dropout']
 
 	def __call__(self, input_q, input_kv):
 		if self.IF_MHA:
@@ -54,7 +50,7 @@ class MHA_block_class():
 			elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
 				output_cell = ADD_NORM()(input_q, output_cell)
 			
-			if (self.enc_or_dec == 'encoder' and self.self_or_crossMHA == 'self') or (self.enc_or_dec == 'decoder' and self.self_or_crossMHA == 'cross'):
+			if (self.IF_GRN_block == 1) and ((self.enc_or_dec == 'encoder' and self.self_or_crossMHA == 'self') or (self.enc_or_dec == 'decoder' and self.self_or_crossMHA == 'cross')):
 				output_cell = GRN_layer(
 								hidden_layer_size = self.all_layers_neurons,
 								output_size = self.all_layers_neurons,

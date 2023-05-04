@@ -221,13 +221,15 @@ class MERGE_LIST(tf.keras.layers.Layer):
 	def __init__(self, d1):
 		super().__init__()
 		self.conc = tf.keras.layers.Concatenate()
-		self.dense1 = tf.keras.layers.Dense(d1+2)
-		self.dense2 = tf.keras.layers.Dense(d1)
+		self.dense1 = tf.keras.layers.Dense(d1*4)
+		self.dense2 = tf.keras.layers.Dense(d1*2)
+		self.dense3 = tf.keras.layers.Dense(d1)
 
 	def call(self, x1, training=False):
 		x = self.conc(x1)
 		x = self.dense1(x)
 		x = self.dense2(x)
+		x = self.dense3(x)
 		return x
 
 

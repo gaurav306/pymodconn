@@ -1,4 +1,5 @@
 from keras.utils.layer_utils import count_params
+from pymodconn.configs.configs_init import read_write_yaml
 import os
 from typing import *
 
@@ -64,6 +65,9 @@ class Build_utils():
             self.save_models_dir, '%s_modelimage.png' % (self.current_dt))
         self.save_modelsummary_name = os.path.join(
             self.save_models_dir, '%s_modelsummary.txt' % (self.current_dt))
+        self.save_modelconfig = os.path.join(
+            self.save_models_dir, '%s_modelconfig.yaml' % (self.current_dt))
+        
 
     def CVRMSE_Q50_prob_nonparametric(self, y_true, y_pred):
         return K.sqrt(K.mean(K.square(y_pred[:, :, :, 3] - y_true)))/(K.mean(y_true))
@@ -134,6 +138,9 @@ class Build_utils():
             print('Saving model as %s' % self.save_modelimage_name)
             plot_model(self.model, to_file=self.save_modelimage_name,
                        show_shapes=True, show_layer_names=True, dpi=600, expand_nested=True)
+        
+        read_write_yaml(self.save_modelconfig, 'w', self.cfg)
+
         print("[ModelClass] Building postmodel DONE!! model can be used as self.model")
 
 

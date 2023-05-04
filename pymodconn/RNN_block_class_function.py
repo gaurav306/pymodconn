@@ -8,25 +8,25 @@ K = tf.keras.backend
 
 
 class RNN_block_class():
-	def __init__(self, cfg, enc_or_dec, location, num):
+	def __init__(self, cfg, enc_or_dec, input_or_output, num):
 		self.cfg = cfg
 		self.enc_or_dec = enc_or_dec
-		self.location = location
-		assert self.location in ['encoder_input', 'decoder_input', 'decoder_output'], 'location must be one of encoder_input, decoder_input, decoder_output'
+		self.input_or_output = input_or_output
+		assert self.input_or_output in ['input', 'output'], 'input_or_output must be one of input, output'
 		self.num = num
 		
 		self.all_layers_neurons = cfg['all_layers_neurons']
 		self.all_layers_dropout = cfg['all_layers_dropout']
 
-		self.IF_RNN = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['IF_RNN_' + self.location]
-		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['IF_NONE_GLUADDNORM_ADDNORM_block_' + self.location]
-		self.IF_GRN = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['IF_GRN_block_' + self.location]
+		self.IF_RNN 					= self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['IF_RNN']
+		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['IF_NONE_GLUADDNORM_ADDNORM_block']
+		self.IF_GRN 					= self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['IF_GRN_block']
 
 	def __call__(self, input_cell, init_states=None):
 		if self.IF_RNN:
 			rnn = rnn_unit(self.cfg,
 		  				self.enc_or_dec,
-						location=self.location,
+						input_or_output=self.input_or_output,
 						num=self.num)
 			
 			rnn_outputs1 = rnn(input_cell,
@@ -68,20 +68,20 @@ class RNN_block_class():
 
 
 class rnn_unit():
-	def __init__(self, cfg, enc_or_dec, location, num):  #location = 'encoder_input' or 'decoder_input' or 'decoder_output'
+	def __init__(self, cfg, enc_or_dec, input_or_output, num): 
 		
 		self.cfg = cfg
 		self.enc_or_dec = enc_or_dec
-		self.location = location
+		self.input_or_output = input_or_output
 		self.num = num
 		
 		self.all_layers_neurons = self.cfg['all_layers_neurons']
 		self.all_layers_dropout = self.cfg['all_layers_dropout']
 
-		self.rnn_depth = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['rnn_depth_' + self.location]
-		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['IF_NONE_GLUADDNORM_ADDNORM_deep_' + self.location]
-		self.rnn_type = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['rnn_type_' + self.location]
-		self.IF_birectionalRNN = self.cfg[self.enc_or_dec]['RNN_block_' + self.location]['IF_birectionalRNN_' + self.location]
+		self.rnn_depth 					= self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['rnn_depth']
+		self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['IF_NONE_GLUADDNORM_ADDNORM_deep']
+		self.rnn_type 					= self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['rnn_type']
+		self.IF_birectionalRNN 			= self.cfg[self.enc_or_dec]['RNN_block_' + self.input_or_output]['IF_birectionalRNN']
 
 		self.all_layers_neurons_rnn = int(self.all_layers_neurons/self.rnn_depth)
 		self.all_layers_neurons_rnn = 8 * int(self.all_layers_neurons_rnn/8)
@@ -138,9 +138,10 @@ class rnn_unit():
 		elif self.rnn_type == "RNN":
 			RNN_type = tf.keras.layers.SimpleRNN
 
-		if self.location == "encoder_input":
+		self.rnn_location = self.enc_or_dec + '_' + self.input_or_output
+		if self.rnn_location == "encoder_input":
 			self.init_state = None
-		elif self.location == "decoder_input" or self.location == "decoder_output":
+		elif self.rnn_location == "decoder_input" or self.rnn_location == "decoder_output":
 			self.init_state = init_states
 
 		if mid_layer:
@@ -151,10 +152,10 @@ class rnn_unit():
 			ret_state = True
 
 		if self.IF_birectionalRNN:
-			self.layername = layername_prefix + self.location + \
+			self.layername = layername_prefix + self.rnn_location + \
 				'_' + str(self.num) + '_bi' + self.rnn_type
 		else:
-			self.layername = layername_prefix + self.location + \
+			self.layername = layername_prefix + self.rnn_location + \
 				'_' + str(self.num) + '_' + self.rnn_type
 
 		if self.IF_birectionalRNN:
