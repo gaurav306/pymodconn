@@ -2,7 +2,7 @@
 
 ## pymodconn = A Python package for developing modular sequence to sequence control oriented neural networks
 
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/CONN.png)
 
 A Control-Oriented Neural Network (CONN) is an artificial neural network designed to predict the future behavior and response of highly complex thermodynamic systems, taking into account past known data and future known data.
 
