@@ -25,11 +25,16 @@ input_sequence_length = 10
 output_sequence_length = 10
 num_features = 3
 
-x_train = np.random.random((num_samples, input_sequence_length, num_features))
-y_train = np.random.random((num_samples, output_sequence_length, num_features))
+# Known_past = Known past system dynamics + Known past control inputs to the system
+# Known_future = Control inputs to the system in future
+# Unknown_future = System dynamics of system in future with known future control inputs
+x_train_known_past = np.random.random((num_samples, input_sequence_length, num_features))
+x_train_known_future = np.random.random((num_samples, input_sequence_length, num_features))
+y_train_unknown_future = np.random.random((num_samples, output_sequence_length, num_features))
 
-x_test = np.random.random((num_samples, input_sequence_length, num_features))
-y_test = np.random.random((num_samples, output_sequence_length, num_features))
+x_test_known_past = np.random.random((num_samples, input_sequence_length, num_features))
+x_test_known_future = np.random.random((num_samples, input_sequence_length, num_features))
+y_test_unknown_future = np.random.random((num_samples, output_sequence_length, num_features))
 
 # Load the configurations for the model
 configs = get_configs('config_model.yaml')
@@ -49,20 +54,20 @@ model = model_class.model
 
 # Train the model
 history = model.fit(
-    x_train,
-    y_train,
+    [x_train_known_past, x_train_known_future],
+    y_train_unknown_future,
     batch_size=32,
     epochs=10,
     validation_split=0.2
 )
 
 # Evaluate the model
-test_loss, test_accuracy = model.evaluate(x_test, y_test)
+test_loss, test_accuracy = model.evaluate([x_test_known_past, x_test_known_future], y_test_unknown_future)
 
 # Print the results
 print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 
 # Save the model with a unique filename based on 'current_run_dt'
 model.save(f'{current_run_dt}_random_time_series_model.h5')
-
 ```
+
