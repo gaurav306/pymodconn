@@ -71,3 +71,7 @@ print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 model.save(f'{current_run_dt}_random_time_series_model.h5')
 ```
 
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture2.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture3.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture4.png)
