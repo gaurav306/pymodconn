@@ -16,11 +16,11 @@ CONN is particularly useful in applications where systems are affected by extern
 ## Instructions
 
 ### 1. Install:
----
+
 ```
 pip install pymodconn
 ```
----
+
 ### 2. Usage:
 Download congifuration file from pymodconn\configs\default_config.yaml
 
@@ -92,6 +92,6 @@ model.save(f'{current_run_dt}_random_time_series_model.h5')
 
 ## License
 
-MIT
+MIT License
 
 **Free Software, Hell Yeah!**
