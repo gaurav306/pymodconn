@@ -14,16 +14,55 @@ pip install pymodconn
 Download congifuration file from pymodconn\configs\default_config.yaml
 
 ```python
+import numpy as np
 from pymodconn.configs_init import get_configs
 from pymodconn import Model_Gen
 import datetime as dt
 
+# Generate random time series data for training and evaluation (sequence-to-sequence)
+num_samples = 1000
+input_sequence_length = 10
+output_sequence_length = 10
+num_features = 3
+
+x_train = np.random.random((num_samples, input_sequence_length, num_features))
+y_train = np.random.random((num_samples, output_sequence_length, num_features))
+
+x_test = np.random.random((num_samples, input_sequence_length, num_features))
+y_test = np.random.random((num_samples, output_sequence_length, num_features))
+
+# Load the configurations for the model
 configs = get_configs('config_model.yaml')
+
+# 'ident' is a string used to differentiate between different runs or cases
 ident = 'test_'
+
+# 'current_run_dt' is a timestamped string to ensure unique file and prediction case names
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 
-model_class = Model_Gen(configs_data, current_run_dt)
+# Initialize and build the model using your library
+model_class = Model_Gen(configs, current_run_dt)
 model_class.build_model()
-print('model_class.model.inputs: ',model_class.model.inputs)
-print('model_class.model.outputs: ',model_class.model.outputs)
+model = model_class.model
+
+# Note: Model compilation happens inside Model_Gen.build_model()
+
+# Train the model
+history = model.fit(
+    x_train,
+    y_train,
+    batch_size=32,
+    epochs=10,
+    validation_split=0.2
+)
+
+# Evaluate the model
+test_loss, test_accuracy = model.evaluate(x_test, y_test)
+
+# Print the results
+print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
+
+# Save the model with a unique filename based on 'current_run_dt'
+model.save(f'{current_run_dt}_random_time_series_model.h5')
+
 ```
