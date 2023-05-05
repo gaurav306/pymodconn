@@ -1,6 +1,17 @@
 # pymodconn
 
-pymodconn = A Python package for developing modular sequence to sequence control oriented neural networks
+## pymodconn = A Python package for developing modular sequence to sequence control oriented neural networks
+
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.png)
+
+A Control-Oriented Neural Network (CONN) is an artificial neural network designed to predict the future behavior and response of highly complex thermodynamic systems, taking into account past known data and future known data.
+
+1. Past known data includes historical information such as weather data, system dynamics, and control inputs, which is used to train the neural network to understand the relationships between these variables and their effects on the system.
+2. Future known data encompasses forecasted weather data and targeted control inputs, representing the expected conditions and desired actions that the system will be subject to in the future.
+
+The neural network leverages this information to predict future unknown data, referring to the system dynamics or states that are not yet known. This prediction enables the control system to anticipate changes in the environment and adapt its actions accordingly, ensuring optimal performance and robustness in the face of uncertainties.
+
+CONN is particularly useful in applications where systems are affected by external factors (such as weather) and require precise control over their dynamics, such as energy management systems, water resource management, and other infrastructure systems that must be optimized to ensure reliability and efficiency.
 
 ## Instructions
 
@@ -71,7 +82,7 @@ print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 model.save(f'{current_run_dt}_random_time_series_model.h5')
 ```
 
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.png)
+
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture2.png)
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture3.png)
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture4.png)
