@@ -16,15 +16,12 @@ CONN is particularly useful in applications where systems are affected by extern
 ## Instructions
 
 ### 1. Install:
-
 ```
 pip install pymodconn
 ```
-
 ### 2. Usage:
-Download congifuration file from pymodconn\configs\default_config.yaml
+Download congifuration file from [pymodconn\configs\default_config.yaml]
 
-<pre>
 ```python
 import numpy as np
 from pymodconn.configs_init import get_configs
@@ -82,7 +79,6 @@ print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 # Save the model with a unique filename based on 'current_run_dt'
 model.save(f'{current_run_dt}_random_time_series_model.h5')
 ```
-</pre>
 
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture2.png)
 
@@ -96,3 +92,5 @@ model.save(f'{current_run_dt}_random_time_series_model.h5')
 MIT License
 
 **Free Software, Hell Yeah!**
+
+   [pymodconn\configs\default_config.yaml]: <https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/default_config.yaml>
