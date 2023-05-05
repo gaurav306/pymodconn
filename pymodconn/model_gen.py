@@ -11,7 +11,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 
-class ModelClass():
+class Model_Gen():
     def __init__(self, cfg, current_dt):
         self.cfg = cfg
         self.current_dt = current_dt
@@ -47,7 +47,7 @@ class ModelClass():
         """
         timer = Model_utils.Timer()
         timer.start()
-        print('[ModelClass] Model Compiling.....')
+        print('[pymodconn] Model Compiling.....')
         self.known_future_features = self.known_future_features - self.control_future_cells + 1
 
         # input for encoder_past
@@ -98,7 +98,7 @@ class ModelClass():
             self.cfg, self.current_dt).postbuild_model(self.model)
 
     def load_model(self, filepath):
-        print('[ModelClass_tfp] Loading model from file %s' % filepath)
+        print('[pymodconn_tfp] Loading model from file %s' % filepath)
         # self.model = load_model(filepath)
         self.model.load_weights(filepath)
         # https://stackoverflow.com/a/69663259/6510598

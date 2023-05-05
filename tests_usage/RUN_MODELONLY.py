@@ -7,12 +7,12 @@ import shutil
 
 from pymodconn.configs.configs_init import get_configs
 from pymodconn.configs.create_json_schema import create_schema_from_yaml
-from pymodconn.model_gen import ModelClass
+from pymodconn import Model_Gen
 
 # takes argument as time_dt for all file saves and configuration json data
 def runmain(time_dt, configs_data):
 	tf.keras.backend.clear_session()
-	model_class = ModelClass(configs_data, time_dt)
+	model_class = Model_Gen(configs_data, time_dt)
 	model_class.build_model()
 	#print('model_class.model.inputs: ',model_class.model.inputs)
 	#print('model_class.model.outputs: ',model_class.model.outputs)
