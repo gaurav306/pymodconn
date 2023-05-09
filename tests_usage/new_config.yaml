@@ -27,7 +27,7 @@ n_future: 96
 known_past_features: 31
 unknown_future_features: 1
 known_future_features: 15
-control_future_cells: 1x
+control_future_cells: 1
 
 all_layers_neurons: 128
 all_layers_dropout: 0.4

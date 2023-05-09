@@ -107,7 +107,7 @@ def assert_check_edit_configs(configs):
 def get_configs(config_filename):
 	
 	# Check if the config file exists
-	if not os.path.exists(config_filename):
+	if not os.path.exists(config_filename) or config_filename == None:
 		print(f"Config file '{config_filename}' not found. The default config file will be saved in current directory as '{config_filename}'. After editing the config file, please run the scrip again with .")
 		# Load the default config file
 		default_config_path = pkg_resources.resource_filename('pymodconn', DEFAULT_CONFIG_FILENAME)
