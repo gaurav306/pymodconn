@@ -43,17 +43,27 @@ class Model_Gen():
 
     def build_model(self):
         """
-        The build_model() method is responsible for constructing the architecture of your deep learning model according to the specifications outlined in the provided configuration file. The model is built using the Keras API of TensorFlow, which allows for the flexible construction of a variety of neural network models.
+        The build_model() method is responsible for constructing the architecture of your deep learning model according to the 
+        specifications outlined in the provided configuration file. The model is built using the Keras API of TensorFlow, 
+        which allows for the flexible construction of a variety of neural network models.
 
-        This method first creates an input layer for the encoder, encoder_inputs, and passes this to an instance of Encoder_class. The encoder processes the input data and returns two outputs: encoder_outputs_seq and encoder_outputs_allstates. These outputs represent the sequence of hidden states and the final state of the encoder, respectively.
+        This method first creates an input layer for the encoder, encoder_inputs, and passes this to an instance of Encoder_class. 
+        The encoder processes the input data and returns two outputs: encoder_outputs_seq and encoder_outputs_allstates. 
+        These outputs represent the sequence of hidden states and the final state of the encoder, respectively.
 
-        Next, the method enters a loop where it creates a number of decoders based on the control_future_cells parameter, which can range from 1 to 6. For each iteration, it creates a new input layer decoder_{i}_inputs and passes it, along with the encoder outputs, to an instance of Decoder_class. The output of each decoder is added to decoder_outputs_list.
+        Next, the method enters a loop where it creates a number of decoders based on the control_future_cells parameter, 
+        which can range from 1 to 6. For each iteration, it creates a new input layer decoder_{i}_inputs and passes it, 
+        along with the encoder outputs, to an instance of Decoder_class. The output of each decoder is added to decoder_outputs_list.
 
         After all decoders have been processed, the method concatenates their outputs using a custom MERGE_LIST layer.
 
-        The method then determines whether the model uses a probabilistic or non-probabilistic forecast approach based on the model_type_prob parameter. Depending on the approach, it applies different operations to the concatenated decoder outputs to produce the final model output, decoder_outputs4.
+        The method then determines whether the model uses a probabilistic or non-probabilistic forecast approach based 
+        on the model_type_prob parameter. Depending on the approach, it applies different operations to the concatenated 
+        decoder outputs to produce the final model output, decoder_outputs4.
 
-        Finally, it creates a Keras Model instance with the encoder inputs and decoder inputs as inputs and decoder_outputs4 as the output. The Build_utils method is called to post-process the model, where it selects the appropriate loss function, optimizer, and metrics based on the user input from the configuration file.
+        Finally, it creates a Keras Model instance with the encoder inputs and decoder inputs as inputs and decoder_outputs4 
+        as the output. The Build_utils method is called to post-process the model, where it selects the appropriate 
+        loss function, optimizer, and metrics based on the user input from the configuration file.
         """
         timer = Model_utils.Timer()
         timer.start()
