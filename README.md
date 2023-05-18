@@ -88,7 +88,11 @@ model.save(f'{current_run_dt}_random_time_series_model.h5')
 
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture3.png)
 
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture-4.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture4.png)
+
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture5.png)
+
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture6.png)
 
 
 ## License
