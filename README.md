@@ -4,7 +4,7 @@
 
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/CONN.png)
 
-A Control-Oriented Neural Network (CONN) is an artificial neural network designed to predict the future behavior and response of highly complex thermodynamic systems, taking into account past known data and future known data.
+A Control-Oriented Neural Network (CONN) is an artificial neural network designed to predict the future behavior and response of highly complex dynamic systems, taking into account past known data and future known data.
 
 1. Past known data includes historical information such as weather data, system dynamics, and control inputs, which is used to train the neural network to understand the relationships between these variables and their effects on the system.
 2. Future known data encompasses forecasted weather data and targeted control inputs, representing the expected conditions and desired actions that the system will be subject to in the future.
