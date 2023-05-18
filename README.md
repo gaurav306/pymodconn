@@ -2,7 +2,7 @@
 
 ## _pymodconn_ : A Python package for developing modular sequence to sequence control oriented neural networks
 
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture1.jpg)
 
 A Control-Oriented Neural Network (CONN) is an artificial neural network designed to predict the future behavior and response of highly complex dynamic systems, taking into account past known data and future known data.
 
@@ -84,15 +84,11 @@ print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 model.save(f'{current_run_dt}_random_time_series_model.h5')
 ```
 
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture2.png)
-
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture3.png)
-
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture4.png)
-
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture5.png)
-
-![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture6.png)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture2.jpg)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture3.jpg)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture4.jpg)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture5.jpg)
+![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/Picture6.jpg)
 
 
 ## License
