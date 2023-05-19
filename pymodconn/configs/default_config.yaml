@@ -44,7 +44,8 @@ IF_SIMPLE_MODEL:
   ALL_TCN_NB_STACKS: 2
   ALL_TCN_DILATIONS: [1, 2, 4, 8, 16, 32]
   
-  CIT_option: 3
+  CIT_option: 2
+  CIT_depth: 2
 
   IF_ALL_TCN: 1
   IF_ALL_RNN: 0
@@ -112,10 +113,12 @@ decoder:
   CIT_option: 1                     #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
   # Contextual Information Transfer - option 1 settings 
   IF_NONE_GLUADDNORM_ADDNORM_CIT_1: 1   #0: None, 1: GLUADDNORM, 2: ADDNORM
+  option_1_depth : 3
 
   # Contextual Information Transfer - option 2 settings
   IF_NONE_GLUADDNORM_ADDNORM_CIT_2: 1   #0: None, 1: GLUADDNORM, 2: ADDNORM
   attn_type: 2                          # 1 is Luong attention, 2 is Bahdanau attention ----> preffered is 2
+  option_2_depth : 3
   
   # Contextual Information Transfer - option 3 settings
   IF_POS_ENCODE: 1

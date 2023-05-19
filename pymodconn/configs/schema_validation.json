@@ -185,6 +185,9 @@
                 "CIT_option": {
                     "type": "integer"
                 },
+                "CIT_depth": {
+                    "type": "integer"
+                },
                 "IF_ALL_TCN": {
                     "type": "integer"
                 },
@@ -337,10 +340,16 @@
                 "IF_NONE_GLUADDNORM_ADDNORM_CIT_1": {
                     "type": "integer"
                 },
+                "option_1_depth": {
+                    "type": "integer"
+                },
                 "IF_NONE_GLUADDNORM_ADDNORM_CIT_2": {
                     "type": "integer"
                 },
                 "attn_type": {
+                    "type": "integer"
+                },
+                "option_2_depth": {
                     "type": "integer"
                 },
                 "IF_POS_ENCODE": {

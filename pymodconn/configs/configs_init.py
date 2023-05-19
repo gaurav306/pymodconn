@@ -98,12 +98,16 @@ def assert_check_edit_configs(configs):
 				all_try1 = ['IF_SELF_CROSS_MHA',
 							'SELF_CROSS_MHA_depth',
 							'IF_NONE_GLUADDNORM_ADDNORM_CIT_1',
-							'IF_NONE_GLUADDNORM_ADDNORM_CIT_2']
+							'IF_NONE_GLUADDNORM_ADDNORM_CIT_2',
+							'option_1_depth',
+							'option_2_depth']
 				
 				all_except1 = ['IF_ALL_MHA',
 							   'ALL_MHA_DEPTH',
 							   'IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							   'IF_ALL_NONE_GLUADDNORM_ADDNORM']
+							   'IF_ALL_NONE_GLUADDNORM_ADDNORM',
+							   'CIT_depth',
+							   'CIT_depth']
 				
 				for i in range(len(all_try1)):
 					try:

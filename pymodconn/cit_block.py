@@ -27,45 +27,48 @@ class CIT_block():
 	
 	def __call__(self, input_cell, input_enc):
 		if self.option == 1:
-			input_enc = tf.keras.layers.Reshape((self.n_future, -1))(input_enc)
-			output_cell = tf.keras.layers.Concatenate()([input_cell, input_enc])
-			output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
-			
-			self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg['decoder']['IF_NONE_GLUADDNORM_ADDNORM_CIT_1']
+			for i in range(self.cfg['decoder']['option_1_depth']):
+				input_enc = tf.keras.layers.Reshape((self.n_future, -1))(input_enc)
+				output_cell = tf.keras.layers.Concatenate()([input_cell, input_enc])
+				output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
+				
+				self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg['decoder']['IF_NONE_GLUADDNORM_ADDNORM_CIT_1']
 
-			if self.IF_NONE_GLUADDNORM_ADDNORM == 1:
-				output_cell = GLU_with_ADDNORM(            
-									output_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_cell, output_cell)
-			
-			elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
-				output_cell = ADD_NORM()(input_cell, output_cell)
+				if self.IF_NONE_GLUADDNORM_ADDNORM == 1:
+					output_cell = GLU_with_ADDNORM(            
+										output_layer_size=self.all_layers_neurons,
+										dropout_rate=self.all_layers_dropout,
+										use_time_distributed=False,
+										activation=None)(input_cell, output_cell)
+				
+				elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
+					output_cell = ADD_NORM()(input_cell, output_cell)
 
 		if self.option == 2:
-			self.attn_type = self.cfg['decoder']['attn_type']
-			if self.attn_type == 1:
-				attention_block = tf.keras.layers.Attention()
-			elif self.attn_type == 2:
-				attention_block = tf.keras.layers.AdditiveAttention()
-			elif self.attn_type == 3:
-				print("Wrong attention type")
-			attention_output = attention_block([input_cell, input_enc])
-			output_cell = tf.keras.layers.Concatenate()([input_cell, attention_output])
-			output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
+			for i in range(self.cfg['decoder']['option_2_depth']):
+				self.attn_type = self.cfg['decoder']['attn_type']
+				if self.attn_type == 1:
+					attention_block = tf.keras.layers.Attention()
+				elif self.attn_type == 2:
+					attention_block = tf.keras.layers.AdditiveAttention()
+				elif self.attn_type == 3:
+					print("Wrong attention type")
+				attention_output = attention_block([input_cell, input_enc])
+				output_cell = tf.keras.layers.Concatenate()([input_cell, attention_output])
+				output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
 
-			self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg['decoder']['IF_NONE_GLUADDNORM_ADDNORM_CIT_2']
+				self.IF_NONE_GLUADDNORM_ADDNORM = self.cfg['decoder']['IF_NONE_GLUADDNORM_ADDNORM_CIT_2']
 
-			if self.IF_NONE_GLUADDNORM_ADDNORM == 1:
-				output_cell = GLU_with_ADDNORM(            
-									output_layer_size=self.all_layers_neurons,
-									dropout_rate=self.all_layers_dropout,
-									use_time_distributed=False,
-									activation=None)(input_cell, output_cell)
-			
-			elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
-				output_cell = ADD_NORM()(input_cell, output_cell)		
+				if self.IF_NONE_GLUADDNORM_ADDNORM == 1:
+					output_cell = GLU_with_ADDNORM(            
+										output_layer_size=self.all_layers_neurons,
+										dropout_rate=self.all_layers_dropout,
+										use_time_distributed=False,
+										activation=None)(input_cell, output_cell)
+				
+				elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
+					output_cell = ADD_NORM()(input_cell, output_cell)	
+				input_cell = output_cell	
 
 		if self.option == 3:
 			# Positional encoding for DECODER MHA 
