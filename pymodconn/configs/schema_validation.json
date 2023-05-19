@@ -182,6 +182,9 @@
                         "type": "integer"
                     }
                 },
+                "CIT_option": {
+                    "type": "integer"
+                },
                 "IF_ALL_TCN": {
                     "type": "integer"
                 },
@@ -328,6 +331,18 @@
                         }
                     }
                 },
+                "CIT_option": {
+                    "type": "integer"
+                },
+                "IF_NONE_GLUADDNORM_ADDNORM_CIT_1": {
+                    "type": "integer"
+                },
+                "IF_NONE_GLUADDNORM_ADDNORM_CIT_2": {
+                    "type": "integer"
+                },
+                "attn_type": {
+                    "type": "integer"
+                },
                 "IF_POS_ENCODE": {
                     "type": "integer"
                 },
@@ -421,12 +436,6 @@
                     }
                 },
                 "MERGE_STATES_METHOD": {
-                    "type": "integer"
-                },
-                "IF_ATTENTION": {
-                    "type": "integer"
-                },
-                "attn_type": {
                     "type": "integer"
                 }
             }

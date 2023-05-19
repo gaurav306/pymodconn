@@ -44,6 +44,13 @@ def assert_check_edit_configs(configs):
 	'''
 	if configs['IF_SIMPLE_MODEL']['IF'] == 1:
 
+		configs['decoder']['CIT_option'] = configs['IF_SIMPLE_MODEL']['CIT_option']
+		
+		if configs['IF_SIMPLE_MODEL']['CIT_option'] == 3 and configs['IF_SIMPLE_MODEL']['IF_ALL_MHA'] == 0:
+			configs['decoder']['CIT_option'] = 2
+			configs['IF_SIMPLE_MODEL']['CIT_option'] = 2
+			print('CIT_option changed to 2 as IF_ALL_MHA is 0')
+
 		for enc_dec in ['encoder', 'decoder']:
 			for block in ['TCN_input', 'RNN_block_input', 'self_MHA_block', 'cross_MHA_block', 'TCN_output', 'RNN_block_output']:
 				
@@ -89,10 +96,14 @@ def assert_check_edit_configs(configs):
 						continue
 
 				all_try1 = ['IF_SELF_CROSS_MHA',
-							'SELF_CROSS_MHA_depth']
+							'SELF_CROSS_MHA_depth',
+							'IF_NONE_GLUADDNORM_ADDNORM_CIT_1',
+							'IF_NONE_GLUADDNORM_ADDNORM_CIT_2']
 				
 				all_except1 = ['IF_ALL_MHA',
-							   'ALL_MHA_DEPTH']
+							   'ALL_MHA_DEPTH',
+							   'IF_ALL_NONE_GLUADDNORM_ADDNORM',
+							   'IF_ALL_NONE_GLUADDNORM_ADDNORM']
 				
 				for i in range(len(all_try1)):
 					try:
