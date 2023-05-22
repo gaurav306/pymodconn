@@ -27,7 +27,7 @@ n_future: 96
 known_past_features: 31
 unknown_future_features: 1
 known_future_features: 15
-control_future_cells: 1
+control_future_cells: 6
 
 all_layers_neurons: 128
 all_layers_dropout: 0.4
@@ -35,23 +35,23 @@ all_layers_dropout: 0.4
 # SIMPLE MODEL SETTINGS
 IF_SIMPLE_MODEL:   
   IF: 1       # if this is 1, the following settings will be used everywhere in the detailed model settings
-  ALL_RNN_DEPTH: 2
+  ALL_RNN_DEPTH: 5
   ALL_RNN_TYPE: GRU
   ALL_RNN_BIDIRECTIONAL: 1
   ALL_MHA_HEAD: 8
-  ALL_MHA_DEPTH: 3
+  ALL_MHA_DEPTH: 5
   ALL_TCN_KERNEL_SIZE: 3
   ALL_TCN_NB_STACKS: 2
   ALL_TCN_DILATIONS: [1, 2, 4, 8, 16, 32]
   
-  CIT_option: 2
-  CIT_depth: 2
+  CIT_option: 3
+  CIT_depth: 3
 
   IF_ALL_TCN: 1
-  IF_ALL_RNN: 0
-  IF_ALL_MHA: 0
-  IF_ALL_NONE_GLUADDNORM_ADDNORM: 0
-  IF_ALL_GRN: 0
+  IF_ALL_RNN: 1
+  IF_ALL_MHA: 1
+  IF_ALL_NONE_GLUADDNORM_ADDNORM: 1
+  IF_ALL_GRN: 1
 
 # DETAILED MODEL SETTINGS
 # ENCODER SETTINGS
@@ -74,7 +74,7 @@ encoder:
     IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
     IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
   
-  IF_POS_ENCODE: 1
+  IF_POS_ENCODE: 1                              # If position encoding is added
 
   self_MHA_block:
     # settings for self MHA block outside the block class
@@ -83,7 +83,7 @@ encoder:
     IF_MHA: 1
     IF_GRN_block: 1                             #0: no GRN, 1: GRN
     MHA_head: 8
-    IF_NONE_GLUADDNORM_ADDNORM_deep: 1                #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
 
 
 
@@ -110,14 +110,14 @@ decoder:
     IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
     IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
   
-  CIT_option: 1                     #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
+  CIT_option: 1                                 #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
   # Contextual Information Transfer - option 1 settings 
-  IF_NONE_GLUADDNORM_ADDNORM_CIT_1: 1   #0: None, 1: GLUADDNORM, 2: ADDNORM
+  IF_NONE_GLUADDNORM_ADDNORM_CIT_1: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
   option_1_depth : 3
 
   # Contextual Information Transfer - option 2 settings
-  IF_NONE_GLUADDNORM_ADDNORM_CIT_2: 1   #0: None, 1: GLUADDNORM, 2: ADDNORM
-  attn_type: 2                          # 1 is Luong attention, 2 is Bahdanau attention ----> preffered is 2
+  IF_NONE_GLUADDNORM_ADDNORM_CIT_2: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
+  attn_type: 2                                  # 1 is Luong attention, 2 is Bahdanau attention 
   option_2_depth : 3
   
   # Contextual Information Transfer - option 3 settings
@@ -130,14 +130,14 @@ decoder:
     IF_MHA: 1
     IF_GRN_block: 1                             #0: no GRN, 1: GRN
     MHA_head: 8
-    IF_NONE_GLUADDNORM_ADDNORM_deep: 1                 #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
 
   cross_MHA_block:
     # settings for cross MHA units inside the blocks
     IF_MHA: 1
     IF_GRN_block: 1                             #0: no GRN, 1: GRN
     MHA_head: 8
-    IF_NONE_GLUADDNORM_ADDNORM_deep: 1                 #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
 
 
   # TCN block_decoder output settings
@@ -161,12 +161,13 @@ decoder:
     IF_NONE_GLUADDNORM_ADDNORM_deep: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
 
   MERGE_STATES_METHOD: 4
-  #-----about merging states from Encoder_states(A) and Decoder_input_states(B) for Decoder_output init_states
+  #-----about merging states from Encoder_states(A) 
+  # and Decoder_input_states(B) for Decoder_output init_states
   # there are 8 options:
   # 1: None
   # 2: A - Dense layer
   # 3: B - Dense layer
-  # 4: A+B - Concat -> Dense layer -------------------> this is the best one
+  # 4: A+B - Concat -> Dense layer 
   # 5: A+B - Add -> Dense layer
   # 6: A+B - Add_Norm -> Dense layer
   # 7: A+B - Add

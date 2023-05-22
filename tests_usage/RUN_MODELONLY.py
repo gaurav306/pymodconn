@@ -6,7 +6,6 @@ print('tf.__version__: ',tf.__version__)
 import shutil
 
 from pymodconn.configs.configs_init import get_configs
-from pymodconn.configs.create_json_schema import create_schema_from_yaml
 from pymodconn import Model_Gen
 
 # takes argument as time_dt for all file saves and configuration json data
@@ -17,20 +16,17 @@ def runmain(time_dt, configs_data):
 	#print('model_class.model.inputs: ',model_class.model.inputs)
 	#print('model_class.model.outputs: ',model_class.model.outputs)
 
-create_schema_from_yaml('new_config.yaml', '..\pymodconn\configs\schema_validation.json')
 shutil.copy('new_config.yaml', '..\pymodconn\configs\default_config.yaml')
 
 configs = get_configs('new_config.yaml')
-
-ident = 'test_'
+ident = 'CIT_1_'
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 runmain(current_run_dt, configs)
 '''
-
-
-for i in [1,4,6]:
-	configs['MERGE_STATES_METHOD'] = i
-	ident = 'noMHA_MERGE_%s_grn_glu_' % i
+for i in [1,2,3]:
+	configs = get_configs('new_config.yaml')
+	configs['IF_SIMPLE_MODEL']['CIT_option'] = i
+	ident = 'CIT_%s_all_' % i
 	current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 	runmain(current_run_dt, configs)
 '''

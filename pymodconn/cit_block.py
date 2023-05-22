@@ -27,8 +27,8 @@ class CIT_block():
 	
 	def __call__(self, input_cell, input_enc):
 		if self.option == 1:
+			input_enc = tf.keras.layers.Reshape((self.n_future, -1))(input_enc)
 			for i in range(self.cfg['decoder']['option_1_depth']):
-				input_enc = tf.keras.layers.Reshape((self.n_future, -1))(input_enc)
 				output_cell = tf.keras.layers.Concatenate()([input_cell, input_enc])
 				output_cell = tf.keras.layers.Dense(self.all_layers_neurons)(output_cell)
 				
@@ -43,6 +43,7 @@ class CIT_block():
 				
 				elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
 					output_cell = ADD_NORM()(input_cell, output_cell)
+				input_cell = output_cell
 
 		if self.option == 2:
 			for i in range(self.cfg['decoder']['option_2_depth']):

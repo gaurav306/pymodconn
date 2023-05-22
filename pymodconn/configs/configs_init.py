@@ -136,24 +136,11 @@ def get_configs(config_filename):
 		configs = read_write_yaml(config_filename, 'r', None)
 	
 	# Validate the config file
-	schema_path = pkg_resources.resource_filename('pymodconn', 'configs/schema_validation.json')
-	validate_config(configs, schema_path)
 	configs = assert_check_edit_configs(configs)
 
 	# Returning the configs
 	return configs
 
 
-
-def validate_config(config, schema_path):
-	with open(schema_path, 'r') as f:
-		schema = json.load(f)
-	try:
-		jsonschema.validate(config, schema)
-		print("Configuration is valid")
-	except jsonschema.exceptions.ValidationError as e:
-		print(f"Config file {config} failed schema validation with errors:")
-		print(e)
-		raise ValueError("Config file failed schema validation.")
 
 
