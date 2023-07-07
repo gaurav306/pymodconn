@@ -13,8 +13,6 @@ def runmain(time_dt, configs_data):
 	tf.keras.backend.clear_session()
 	model_class = Model_Gen(configs_data, time_dt)
 	model_class.build_model()
-	#print('model_class.model.inputs: ',model_class.model.inputs)
-	#print('model_class.model.outputs: ',model_class.model.outputs)
 
 shutil.copy('new_config.yaml', '..\pymodconn\configs\default_config.yaml')
 

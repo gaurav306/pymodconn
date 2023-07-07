@@ -19,7 +19,6 @@ class Decoder_class():
 		self.known_past_features = self.cfg['known_past_features']
 		self.unknown_future_features = self.cfg['unknown_future_features']
 		self.known_future_features = self.cfg['known_future_features']
-		self.control_future_cells = self.cfg['control_future_cells']
 
 		self.all_layers_neurons = self.cfg['all_layers_neurons']
 		self.all_layers_dropout = self.cfg['all_layers_dropout']

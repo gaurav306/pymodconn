@@ -27,7 +27,6 @@ class Model_Gen():
         self.known_past_features = cfg['known_past_features']
         self.unknown_future_features = cfg['unknown_future_features']
         self.known_future_features = cfg['known_future_features']
-        self.control_future_cells = cfg['control_future_cells']
 
         self.all_layers_neurons = cfg['all_layers_neurons']
         self.all_layers_dropout = cfg['all_layers_dropout']
@@ -68,7 +67,6 @@ class Model_Gen():
         timer = Model_utils.Timer()
         timer.start()
         print('[pymodconn] Model Compiling.....')
-        self.known_future_features = self.known_future_features - self.control_future_cells + 1
 
         # input for encoder_past
         encoder_inputs = tf.keras.layers.Input(
@@ -77,6 +75,7 @@ class Model_Gen():
         encoder_outputs_seq, encoder_outputs_allstates = Encoder_class(
             self.cfg, str(1))(encoder_inputs, init_states=None)
 
+        '''
         decoder_outputs_list = []
         
         for i in range(1, self.control_future_cells+1):
@@ -87,12 +86,18 @@ class Model_Gen():
             decoder_outputs_list.append(locals()[f"decoder_{i}_outputs"])
         
         decoder_outputs_all = MERGE_LIST(self.unknown_future_features)(decoder_outputs_list)
+        '''
+        decoder_inputs = tf.keras.layers.Input(
+            shape=(self.n_future, self.known_future_features), name=f"decoder_inputs")
 
+        decoder_outputs = Decoder_class(self.cfg, '1')(decoder_inputs,
+                                                        encoder_outputs_seq,
+                                                        encoder_states=encoder_outputs_allstates)        
 
         # If or not using the probabilistic loss, reshape the output to match the shape required by the loss function.
         if self.model_type_prob == 'prob':
             decoder_outputs3 = tf.keras.layers.Dense(
-                units=self.unknown_future_features * self.n_outputs_lastlayer)(decoder_outputs_all)  # this one
+                units=self.unknown_future_features * self.n_outputs_lastlayer)(decoder_outputs)  # this one
             # Reshape the encoder output to match the shape required by the loss function.
             decoder_outputs4 = tf.keras.layers.Reshape(target_shape=(
                 self.n_future, self.unknown_future_features, self.n_outputs_lastlayer))(decoder_outputs3)
@@ -102,14 +107,10 @@ class Model_Gen():
                     [x[:, :, :, 0], soft_relu(x[:, :, :, 1])], axis=-1))(decoder_outputs4)
         elif self.model_type_prob == 'nonprob':
             decoder_outputs4 = tf.keras.layers.Lambda(
-                lambda x: tf.clip_by_value(x, -1, 1))(decoder_outputs_all)
+                lambda x: tf.clip_by_value(x, -1, 1))(decoder_outputs)
         else:
             raise ValueError(
                 'model_type_prob should be either prob or nonprob')
-
-        decoder_inputs = []
-        for i in range(1, self.control_future_cells+1):
-            decoder_inputs.append(locals()[f"decoder_{i}_inputs"])
 
         self.model = Model(
             [encoder_inputs, decoder_inputs], decoder_outputs4)

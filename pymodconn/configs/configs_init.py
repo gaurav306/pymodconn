@@ -21,104 +21,6 @@ def read_write_yaml(filename, mode, data_yaml):
 			yaml.dump(data_yaml, yamlfile)
 
 
-def assert_check_edit_configs(configs):
-	'''
-	assert configs['optimizer'] == 'Adam' or configs['optimizer'] == 'SGD', 'Adam must be either Adam or SGD'
-	assert configs['model_type_prob'] == 'prob' or configs[
-		'model_type_prob'] == 'nonprob', 'model_type_prob must be either prob or nonprob'
-	assert configs['loss_prob'] == 'nonparametric' or configs[
-		'loss_prob'] == 'parametric', 'loss_prob must be either nonparametric or parametric'
-	#assert configs['control_future_cells'] == 1 or configs['control_future_cells'] == 6, 'control_future_cells must be either 1 or 6'
-	assert configs['all_layers_neurons'] % 8 == 0 and configs[
-		'all_layers_neurons'] >= 8, 'all_layers_neurons must be divisible by 8 and greater than or equal to 8'
-	assert configs['mha_head'] % 8 == 0 and configs[
-		'mha_head'] >= 8, 'mha_head must be divisible by 8 and greater than or equal to 8'
-	assert configs['rnn_type'] in ['LSTM', 'GRU', 'RNN'], 'rnn_type must be either LSTM, GRU or RNN'
-	assert configs['input_enc_rnn_depth'] <= 5, 'max depth of RNN units is 5'
-
-	all_attn1 = configs['IFSELF_enc_MHA'] + configs['IFATTENTION']
-	all_attn2 = configs['IFSELF_dec_MHA'] + configs['IFATTENTION']
-	all_attn3 = configs['IFCROSS_MHA'] + configs['IFATTENTION']
-
-	assert all_attn1 == 1 and all_attn2 == 1 and all_attn3 == 1, 'IFSELF_MHA, IFCASUAL_MHA, IFCROSS_MHA and IFATTENTION must be 1, i.e, only one of them can be 1 at a time'
-	'''
-	if configs['IF_SIMPLE_MODEL']['IF'] == 1:
-
-		configs['decoder']['CIT_option'] = configs['IF_SIMPLE_MODEL']['CIT_option']
-		
-		if configs['IF_SIMPLE_MODEL']['CIT_option'] == 3 and configs['IF_SIMPLE_MODEL']['IF_ALL_MHA'] == 0:
-			configs['decoder']['CIT_option'] = 2
-			configs['IF_SIMPLE_MODEL']['CIT_option'] = 2
-			print('CIT_option changed to 2 as IF_ALL_MHA is 0')
-
-		for enc_dec in ['encoder', 'decoder']:
-			for block in ['TCN_input', 'RNN_block_input', 'self_MHA_block', 'cross_MHA_block', 'TCN_output', 'RNN_block_output']:
-				
-				all_try = ['IF_NONE_GLUADDNORM_ADDNORM_block',
-	       					'IF_NONE_GLUADDNORM_ADDNORM_deep',
-						    'IF_NONE_GLUADDNORM_ADDNORM_TCN',
-						    'IF_GRN_block',
-						    'IF_RNN',
-						    'IF_MHA',
-						    'IF_TCN',
-						    'rnn_depth',
-						    'rnn_type',
-						    'IF_birectionalRNN',
-							'MHA_head',
-							'MHA_depth',
-							'kernel_size',
-							'nb_stacks',
-							'dilations']
-				
-				all_except = ['IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							  'IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							  'IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							  'IF_ALL_GRN',
-							  'IF_ALL_RNN',
-							  'IF_ALL_MHA',
-							  'IF_ALL_TCN',
-							  'ALL_RNN_DEPTH',
-							  'ALL_RNN_TYPE',
-							  'ALL_RNN_BIDIRECTIONAL',
-							  'ALL_MHA_HEAD',
-							  'ALL_MHA_DEPTH',
-							  'ALL_KERNEL_SIZE',
-							  'ALL_NB_STACKS',
-							  'ALL_DILATIONS']
-		  		
-				for i in range(len(all_try)):
-					try:
-						x = configs[enc_dec][block][all_try[i]]
-						if x == 1:
-							configs[enc_dec][block][all_try[i]] = configs['IF_SIMPLE_MODEL'][all_except[i]]
-							
-					except:
-						continue
-
-				all_try1 = ['IF_SELF_CROSS_MHA',
-							'SELF_CROSS_MHA_depth',
-							'IF_NONE_GLUADDNORM_ADDNORM_CIT_1',
-							'IF_NONE_GLUADDNORM_ADDNORM_CIT_2',
-							'option_1_depth',
-							'option_2_depth']
-				
-				all_except1 = ['IF_ALL_MHA',
-							   'ALL_MHA_DEPTH',
-							   'IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							   'IF_ALL_NONE_GLUADDNORM_ADDNORM',
-							   'CIT_depth',
-							   'CIT_depth']
-				
-				for i in range(len(all_try1)):
-					try:
-						x = configs[enc_dec][all_try1[i]]
-						if x == 1:
-							configs[enc_dec][all_try1[i]] = configs['IF_SIMPLE_MODEL'][all_except1[i]]
-					except:
-						continue
-	return configs
-
-
 def get_configs(config_filename):
 	
 	# Check if the config file exists
@@ -135,9 +37,6 @@ def get_configs(config_filename):
 	else:
 		configs = read_write_yaml(config_filename, 'r', None)
 	
-	# Validate the config file
-	configs = assert_check_edit_configs(configs)
-
 	# Returning the configs
 	return configs
 

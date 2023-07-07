@@ -18,7 +18,6 @@ class CIT_block():
 		self.known_past_features = self.cfg['known_past_features']
 		self.unknown_future_features = self.cfg['unknown_future_features']
 		self.known_future_features = self.cfg['known_future_features']
-		self.control_future_cells = self.cfg['control_future_cells']
 
 		self.all_layers_neurons = self.cfg['all_layers_neurons']
 		self.all_layers_dropout = self.cfg['all_layers_dropout']
@@ -72,10 +71,6 @@ class CIT_block():
 				input_cell = output_cell	
 
 		if self.option == 3:
-			# Positional encoding for DECODER MHA 
-			if self.cfg['decoder']['IF_POS_ENCODE'] == 1 and self.cfg['decoder']['IF_SELF_CROSS_MHA'] == 1:
-				pos_encoding = positional_encoding(self.n_future, self.all_layers_neurons)
-				output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_future]])
 
 			# MHA layer for decoder, self and cross attention
 			if self.cfg['decoder']['IF_SELF_CROSS_MHA'] == 1:

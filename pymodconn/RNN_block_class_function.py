@@ -108,6 +108,7 @@ class rnn_unit():
 									activation=None)(input_cell, x)
 			
 			elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
+				input_cell = linear_layer(self.all_layers_neurons_rnn * 2)(input_cell)
 				x = ADD_NORM()(input_cell, x)
 			
 			for i in range(0, self.rnn_depth-2):
@@ -122,6 +123,7 @@ class rnn_unit():
 										activation=None)(input_cell, x)
 				
 				elif self.IF_NONE_GLUADDNORM_ADDNORM == 2:
+					input_cell = linear_layer(self.all_layers_neurons_rnn * 2)(input_cell)
 					x = ADD_NORM()(input_cell, x)
 
 

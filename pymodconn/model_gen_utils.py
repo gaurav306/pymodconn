@@ -45,7 +45,6 @@ class Build_utils():
         self.model_type_prob = cfg['model_type_prob']
         self.loss_prob = cfg['loss_prob']
         self.q = cfg['quantiles']
-        self.control_future_cells = cfg['control_future_cells']
 
         self.n_features_output_block = 1
 

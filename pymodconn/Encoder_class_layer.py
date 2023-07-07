@@ -17,7 +17,6 @@ class Encoder_class():
 		self.known_past_features = cfg['known_past_features']
 		self.unknown_future_features = cfg['unknown_future_features']
 		self.known_future_features = cfg['known_future_features']
-		self.control_future_cells = cfg['control_future_cells']
 
 		self.all_layers_neurons = cfg['all_layers_neurons']
 		self.all_layers_dropout = cfg['all_layers_dropout']
@@ -47,12 +46,6 @@ class Encoder_class():
 					       							'encoder',
 													'input',
 													self.enc_or_dec_number)(input_cell, init_states=init_states)
-		
-		# Positional encoding for ENCODER MHA 
-		input_cell = output_cell
-		if self.cfg['encoder']['IF_POS_ENCODE'] == 1 and self.cfg['encoder']['self_MHA_block']['IF_MHA'] == 1:
-			pos_encoding = positional_encoding(self.n_past, self.all_layers_neurons)  				
-			output_cell = tf.keras.layers.Add()([input_cell + pos_encoding[:self.n_past]])
 
 		# MHA layer with addnorm and GLU at input of encoder
 		input_cell = output_cell
