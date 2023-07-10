@@ -53,22 +53,19 @@ def train_test(MODEL_CONFIG_FILENAME):
 	# Initialize and build the model using your library
 	model_class = Model_Gen(configs, ident)
 	model_class.build_model()
-	model = model_class.model
 
 	# Note: Model compilation happens inside Model_Gen.build_model() and is dependent on the user's choice.
 	# Note: User can also compile model again using different optimizer and loss function
 
 	# Train the model
-	history = model.fit([x_train_known_past, x_train_known_future], y_train_unknown_future,
-						batch_size=128, epochs=5, validation_split=0.2)
+	model_class.model.fit([x_train_known_past, x_train_known_future], y_train_unknown_future, batch_size=128, epochs=3, validation_split=0.2)
 
 	# Evaluate the model
-	test_loss, test_accuracy = model.evaluate([x_test_known_past, x_test_known_future], y_test_unknown_future)
+	test_loss, test_accuracy = model_class.model.evaluate([x_test_known_past, x_test_known_future], y_test_unknown_future)
 	print(f'Test loss: {test_loss}, Test accuracy: {test_accuracy}')
 
-	# Save the model with a unique filename based on ‘current_run_dt'
-	# model.save_weights(f'{ident}_random_time_series_model.h5')
-	model.save(f'{current_run_dt}_random_time_series_model.h5')
+	# Save the model with a unique filename based on ‘current_run_dt'. Can use both keras.model.save_weights() or keras.model.save()
+	model_class.model.save(f'{current_run_dt}_random_time_series_model.h5')
 
 if __name__ == '__main__':
 	MultiprocessingWindow(train_test, (['CONN_based_on_bi_directional_LSTMs_with_Bahdanau_attention.yaml']))()
