@@ -71,10 +71,8 @@ class CIT_block():
 				input_cell = output_cell	
 
 		if self.option == 3:
-
 			# MHA layer for decoder, self and cross attention
 			if self.cfg['decoder']['IF_SELF_CROSS_MHA'] == 1:
-				input_cell = output_cell
 				for i in range(self.cfg['decoder']['SELF_CROSS_MHA_depth']):
 					output_cell = MHA_block_class(self.cfg,
 												'decoder',

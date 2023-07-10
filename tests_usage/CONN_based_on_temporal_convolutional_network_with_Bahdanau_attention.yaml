@@ -43,7 +43,7 @@ encoder:
   
   RNN_block_input:
     # settings for RNN block outside the block class
-    IF_RNN: 1
+    IF_RNN: 0
     IF_NONE_GLUADDNORM_ADDNORM_block: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
     IF_GRN_block: 1                             #0: no GRN, 1: GRN
     # settings for RNN units inside the blocks
@@ -56,7 +56,7 @@ encoder:
     # settings for self MHA block outside the block class
     MHA_depth: 3
     # settings for self MHA units inside the blocks
-    IF_MHA: 1
+    IF_MHA: 0
     IF_GRN_block: 1                             #0: no GRN, 1: GRN
     MHA_head: 8
     IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
@@ -74,7 +74,7 @@ decoder:
   # # RNN block_decoder input settings
   RNN_block_input:
     # settings for RNN block outside the block class
-    IF_RNN: 1
+    IF_RNN: 0
     IF_NONE_GLUADDNORM_ADDNORM_block: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
     IF_GRN_block: 0                             #0: no GRN, 1: GRN
     # settings for RNN units inside the blocks
@@ -83,7 +83,7 @@ decoder:
     IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
     IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
   
-  CIT_option: 1                                 #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
+  CIT_option: 2                                 #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
   # Contextual Information Transfer - option 1 settings 
   IF_NONE_GLUADDNORM_ADDNORM_CIT_1: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
   option_1_depth : 3
@@ -123,7 +123,7 @@ decoder:
   # RNN block_decoder output settings
   RNN_block_output:
     # settings for RNN block outside the block class
-    IF_RNN: 1
+    IF_RNN: 0
     IF_NONE_GLUADDNORM_ADDNORM_block: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
     IF_GRN_block: 1                              #0: no GRN, 1: GRN
     # settings for RNN units inside the blocks

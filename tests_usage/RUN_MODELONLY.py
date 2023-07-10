@@ -14,17 +14,20 @@ def runmain(time_dt, configs_data):
 	model_class = Model_Gen(configs_data, time_dt)
 	model_class.build_model()
 
-shutil.copy('new_config.yaml', '..\pymodconn\configs\default_config.yaml')
+#shutil.copy('new_config.yaml', '..\pymodconn\configs\default_config.yaml')
 
-configs = get_configs('new_config.yaml')
-ident = 'CIT_1_'
+configs = get_configs('CONN_based_on_temporal_convolutional_network_with_Bahdanau_attention.yaml')
+ident = 'TCN_'
 current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
 runmain(current_run_dt, configs)
-'''
-for i in [1,2,3]:
-	configs = get_configs('new_config.yaml')
-	configs['IF_SIMPLE_MODEL']['CIT_option'] = i
-	ident = 'CIT_%s_all_' % i
-	current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
-	runmain(current_run_dt, configs)
-'''
+
+configs = get_configs('CONN_based_on_multi_head_attention.yaml')
+ident = 'MHA_'
+current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
+runmain(current_run_dt, configs)
+
+configs = get_configs('CONN_based_on_bi_directional_LSTMs_with_Bahdanau_attention.yaml')
+ident = 'RNN_'
+current_run_dt = ident + str(dt.datetime.now().strftime('%H.%M.%S.%f')[:-3])
+runmain(current_run_dt, configs)
+
