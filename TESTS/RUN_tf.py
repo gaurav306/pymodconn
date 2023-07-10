@@ -4,7 +4,6 @@ import sys
 sys.path.append("..")
 from pymodconn import Model_Gen
 from pymodconn.configs.configs_init import get_configs
-#import tensorflow as tf
 import datetime as dt
 
 # Wrapper class to spawn a multiprocessing window for training and testing 

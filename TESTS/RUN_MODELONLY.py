@@ -1,8 +1,6 @@
 import datetime as dt
 import sys
 sys.path.append("..")
-import tensorflow as tf
-print('tf.__version__: ',tf.__version__)
 import shutil
 
 from pymodconn.configs.configs_init import get_configs
