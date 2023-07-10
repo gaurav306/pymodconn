@@ -25,30 +25,29 @@ class MultiprocessingWindow():
 def train_test(MODEL_CONFIG_FILENAME):
 	# Load the configurations for the model
 	configs = get_configs(MODEL_CONFIG_FILENAME)
-	configs['if_model_image'] = 0
-	configs['n_past'] = 25					#Number of past observations timesteps to be considered for prediction
-	configs['n_future'] = 10				#Number of future predictions timesteps to be made
-	configs['known_past_features'] = 2 		#Number of features in the past observation window data
-	configs['known_future_features'] = 3 	#Number of features in the future prediction window data
-	configs['unknown_future_features'] = 2	#Number of features in the future prediction window data to be predicted
+	configs['if_model_image'] 				= 0
+	configs['n_past'] 						= 25	#Number of past observations timesteps to be considered for prediction
+	configs['n_future'] 					= 10	#Number of future predictions timesteps to be made
+	configs['known_past_features'] 			= 2 	#Number of features in the past observation window data
+	configs['known_future_features'] 		= 3 	#Number of features in the future prediction window data
+	configs['unknown_future_features'] 		= 2		#Number of features in the future prediction window data to be predicted
 	
 	# Generate random time series data for training and evaluation (sequence-to-sequence)
-	num_samples = 1000
-
-	x_known_past = np.random.random((num_samples, configs['n_past'], configs['known_past_features']))
-	x_known_future = np.random.random((num_samples, configs['n_future'], configs['known_future_features']))
-	y_unknown_future = np.random.random((num_samples, configs['n_future'], configs['unknown_future_features']))
+	num_samples 		= 1000
+	x_known_past 		= np.random.random((num_samples, configs['n_past'], configs['known_past_features']))
+	x_known_future 		= np.random.random((num_samples, configs['n_future'], configs['known_future_features']))
+	y_unknown_future 	= np.random.random((num_samples, configs['n_future'], configs['unknown_future_features']))
 
 	# Split the data into training and testing sets using a basic Python function
-	train_test_split_percentage = 0.8
-	split_index = int(train_test_split_percentage * num_samples)
-	x_train_known_past, x_test_known_past = x_known_past[:split_index], x_known_past[split_index:]
-	x_train_known_future, x_test_known_future = x_known_future[:split_index], x_known_future[split_index:]
-	y_train_unknown_future, y_test_unknown_future = y_unknown_future[:split_index], y_unknown_future[split_index:]
+	train_test_split_percentage 					= 0.8
+	split_index 									= int(train_test_split_percentage * num_samples)
+	x_train_known_past, x_test_known_past 			= x_known_past[:split_index], x_known_past[split_index:]
+	x_train_known_future, x_test_known_future 		= x_known_future[:split_index], x_known_future[split_index:]
+	y_train_unknown_future, y_test_unknown_future 	= y_unknown_future[:split_index], y_unknown_future[split_index:]
 
 	# 'ident' is a string used to ensure unique file and prediction case names
-	ident = 'test_'
-	current_run_dt = ident + str(dt.datetime.now().strftime('%d.%m-%H.%M.%S'))
+	ident 				= 'test_'
+	current_run_dt 		= ident + str(dt.datetime.now().strftime('%d.%m-%H.%M.%S'))
 
 	# Initialize and build the model using your library
 	model_class = Model_Gen(configs, ident)

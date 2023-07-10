@@ -36,7 +36,7 @@ all_layers_dropout: 0.4
 encoder:
   TCN_input:
     IF_TCN: 0
-    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1           # 0: None, 1: GLUADDNORM, 2: ADDNORM
     kernel_size: 3
     nb_stacks: 2
     dilations: [1, 2, 4, 8, 16, 32]
@@ -44,29 +44,29 @@ encoder:
   RNN_block_input:
     # settings for RNN block outside the block class
     IF_RNN: 1
-    IF_NONE_GLUADDNORM_ADDNORM_block: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
-    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    IF_NONE_GLUADDNORM_ADDNORM_block: 1         # 0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_GRN_block: 1                             # 0: no GRN, 1: GRN
     # settings for RNN units inside the blocks
     rnn_depth: 8
-    rnn_type: LSTM                               # GRU, LSTM, SimpleRNN
-    IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
-    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+    rnn_type: LSTM                              # GRU, LSTM, SimpleRNN
+    IF_birectionalRNN: 1                        # 0: Unidirectional, 1: Bidirectional
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          # 0: None, 1: GLUADDNORM, 2: ADDNORM
 
   self_MHA_block:
     # settings for self MHA block outside the block class
     MHA_depth: 3
     # settings for self MHA units inside the blocks
     IF_MHA: 0
-    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    IF_GRN_block: 1                             # 0: no GRN, 1: GRN
     MHA_head: 8
-    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          # 0: None, 1: GLUADDNORM, 2: ADDNORM
 
 # DECODER SETTINGS
 decoder:
   # TCN block_decoder input settings
   TCN_input:
     IF_TCN: 0
-    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
     kernel_size: 3
     nb_stacks: 2
     dilations: [1, 2, 4, 8, 16, 32]

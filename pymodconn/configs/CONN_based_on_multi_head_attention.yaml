@@ -1,0 +1,147 @@
+# ALL BASIC SETTINGS INDEPENDENT OF MODEL ARCHITECTURE
+if_model_image: 1
+if_model_summary: 0
+if_seed: 0
+seed: 500
+
+model_type_prob: prob
+loss_prob: nonparametric
+loss: mean_squared_error
+quantiles: [0.01, 0.05, 0.1, 0.5, 0.9, 0.95, 0.99]
+metrics: [mape, acc]
+optimizer: Adam
+Adam:
+  lr: 0.001
+  b1: 0.9
+  b2: 0.999
+  epsi: 1.0e-08
+SGD:
+  lr: 0.001
+  momentum: 0.9
+save_models_dir: saved_models/
+
+batch_size: 32
+
+n_past: 672
+n_future: 96
+known_past_features: 31
+unknown_future_features: 1
+known_future_features: 15
+
+all_layers_neurons: 128
+all_layers_dropout: 0.4
+
+# DETAILED MODEL SETTINGS
+# ENCODER SETTINGS
+encoder:
+  TCN_input:
+    IF_TCN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    kernel_size: 3
+    nb_stacks: 2
+    dilations: [1, 2, 4, 8, 16, 32]
+  
+  RNN_block_input:
+    # settings for RNN block outside the block class
+    IF_RNN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_block: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    # settings for RNN units inside the blocks
+    rnn_depth: 3
+    rnn_type: GRU                               # GRU, LSTM, SimpleRNN
+    IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+
+  self_MHA_block:
+    # settings for self MHA block outside the block class
+    MHA_depth: 8
+    # settings for self MHA units inside the blocks
+    IF_MHA: 1
+    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    MHA_head: 8
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+
+# DECODER SETTINGS
+decoder:
+  # TCN block_decoder input settings
+  TCN_input:
+    IF_TCN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    kernel_size: 3
+    nb_stacks: 2
+    dilations: [1, 2, 4, 8, 16, 32]
+
+  # # RNN block_decoder input settings
+  RNN_block_input:
+    # settings for RNN block outside the block class
+    IF_RNN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_block: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_GRN_block: 0                             #0: no GRN, 1: GRN
+    # settings for RNN units inside the blocks
+    rnn_depth: 3
+    rnn_type: GRU                               # GRU, LSTM, SimpleRNN
+    IF_birectionalRNN: 1                        # 0: no bidirectional, 1: bidirectional
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+  
+  CIT_option: 3                                 #1: Concatenation, 2: Luong or Bahdanau, 3: Self+cross MHA
+  # Contextual Information Transfer - option 1 settings 
+  IF_NONE_GLUADDNORM_ADDNORM_CIT_1: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
+  option_1_depth : 3
+
+  # Contextual Information Transfer - option 2 settings
+  IF_NONE_GLUADDNORM_ADDNORM_CIT_2: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
+  attn_type: 2                                  # 1 is Luong attention, 2 is Bahdanau attention 
+  option_2_depth : 3
+  
+  # Contextual Information Transfer - option 3 settings
+  IF_SELF_CROSS_MHA: 1
+  SELF_CROSS_MHA_depth: 8
+
+  self_MHA_block:
+    # settings for self MHA units inside the blocks
+    IF_MHA: 1
+    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    MHA_head: 8
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+
+  cross_MHA_block:
+    # settings for cross MHA units inside the blocks
+    IF_MHA: 1
+    IF_GRN_block: 1                             #0: no GRN, 1: GRN
+    MHA_head: 8
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+
+
+  # TCN block_decoder output settings
+  TCN_output:
+    IF_TCN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_TCN: 1         #0: None, 1: GLUADDNORM, 2: ADDNORM
+    kernel_size: 3
+    nb_stacks: 2
+    dilations: [1, 2, 4, 8, 16, 32]
+
+  # RNN block_decoder output settings
+  RNN_block_output:
+    # settings for RNN block outside the block class
+    IF_RNN: 0
+    IF_NONE_GLUADDNORM_ADDNORM_block: 1          #0: None, 1: GLUADDNORM, 2: ADDNORM
+    IF_GRN_block: 1                              #0: no GRN, 1: GRN
+    # settings for RNN units inside the blocks
+    rnn_depth: 3
+    rnn_type: GRU                                # GRU, LSTM, SimpleRNN
+    IF_birectionalRNN: 1                         # 0: no bidirectional, 1: bidirectional
+    IF_NONE_GLUADDNORM_ADDNORM_deep: 1           #0: None, 1: GLUADDNORM, 2: ADDNORM
+
+  MERGE_STATES_METHOD: 4
+  #-----about merging states from Encoder_states(A) 
+  # and Decoder_input_states(B) for Decoder_output init_states
+  # there are 8 options:
+  # 1: None
+  # 2: A - Dense layer
+  # 3: B - Dense layer
+  # 4: A+B - Concat -> Dense layer 
+  # 5: A+B - Add -> Dense layer
+  # 6: A+B - Add_Norm -> Dense layer
+  # 7: A+B - Add
+  # 8: A+B - Add_Norm
+
