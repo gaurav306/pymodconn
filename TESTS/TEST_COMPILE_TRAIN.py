@@ -16,13 +16,9 @@ class MultiprocessingWindow():
 		self.its_args = its_args
 
 	def __call__(self):
-		try:
-			multiprocessing.set_start_method('spawn', force=True)
-			print("Multiprocessing window spawned")
-		except RuntimeError:
-			pass
-		p = multiprocessing.Process(
-			target=self.function_to_run, args=self.its_args)
+		multiprocessing.set_start_method('spawn', force=True)
+		print("Multiprocessing window spawned")
+		p = multiprocessing.Process(target=self.function_to_run, args=self.its_args)
 		p.start()
 		p.join()
 
