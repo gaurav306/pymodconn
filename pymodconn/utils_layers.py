@@ -29,6 +29,16 @@ class linear_layer(tf.keras.layers.Layer):
 		else:
 			x = self.dense_layer(x)
 		return x
+	
+	def get_config(self):
+		config = super().get_config().copy()
+		config.update({
+			'hidden_layer_size': self.hidden_layer_size,
+			'activation': self.activation,
+			'use_time_distributed': self.use_time_distributed,
+			'use_bias': self.use_bias,
+		})
+		return config
 
 
 class GRN_layer(tf.keras.layers.Layer):
@@ -68,6 +78,16 @@ class GRN_layer(tf.keras.layers.Layer):
 		
 		return grn_output
 
+	def get_config(self):
+		config = super().get_config().copy()
+		config.update({
+			'hidden_layer_size': self.hidden_layer_size,
+			'output_size': self.output_size,
+			'dropout_rate': self.dropout_rate,
+			'use_time_distributed': self.use_time_distributed,
+			'activation_layer_type': self.activation_layer_type,
+		})
+		return config
 
 class GLU_with_ADDNORM(tf.keras.layers.Layer):
 	def __init__(self, output_layer_size, dropout_rate, use_time_distributed=True, activation=None):
@@ -93,6 +113,16 @@ class GLU_with_ADDNORM(tf.keras.layers.Layer):
 		x = self.ADD_NORM_layer(skip, x)
 		return x
 
+	def get_config(self):
+		config = super().get_config().copy()
+		config.update({
+			'output_layer_size': self.output_layer_size,
+			'dropout_rate': self.dropout_rate,
+			'use_time_distributed': self.use_time_distributed,
+			'activation': self.activation,
+		})
+		return config
+
 class ADD_NORM(tf.keras.layers.Layer):
 	def __init__(self):
 		super().__init__()
@@ -104,6 +134,10 @@ class ADD_NORM(tf.keras.layers.Layer):
 		tmp = self.add_layer(x)
 		tmp = self.norm_layer(tmp)
 		return tmp
+
+	def get_config(self):
+		config = super().get_config().copy()
+		return config
 
 class GLU_layer(tf.keras.layers.Layer):
 	def __init__(self, output_layer_size, dropout_rate, use_time_distributed=True, activation=None):
@@ -134,6 +168,15 @@ class GLU_layer(tf.keras.layers.Layer):
 
 		return x
 
+	def get_config(self):
+		config = super().get_config().copy()
+		config.update({
+			'output_layer_size': self.output_layer_size,
+			'dropout_rate': self.dropout_rate,
+			'use_time_distributed': self.use_time_distributed,
+			'activation': self.activation,
+		})
+		return config
 
 
 class STATES_MANIPULATION_BLOCK():
@@ -231,18 +274,24 @@ class MERGE_LIST(tf.keras.layers.Layer):
 		x = self.dense2(x)
 		x = self.dense3(x)
 		return x
-
+	
+	def get_config(self):
+		config = super().get_config().copy()
+		config.update({
+			'd1': self.dense1.units,  # Assuming 'd1' corresponds to the units of the first dense layer
+		})
+		return config
 
 
 def positional_encoding(position, d_model):
-    def get_angles(pos, i, d_model):
-        angle_rates = 1 / np.power(1000, (2 * (i // 2)) / np.float32(d_model))
-        return pos * angle_rates
-    
-    angle_rads = get_angles(np.arange(position)[:, np.newaxis],
-                             np.arange(d_model)[np.newaxis, :],
-                             d_model)
-    angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
-    angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
-    pos_encoding = angle_rads[np.newaxis, ...]
-    return tf.cast(pos_encoding, dtype=tf.float32)
+	def get_angles(pos, i, d_model):
+		angle_rates = 1 / np.power(1000, (2 * (i // 2)) / np.float32(d_model))
+		return pos * angle_rates
+	
+	angle_rads = get_angles(np.arange(position)[:, np.newaxis],
+							 np.arange(d_model)[np.newaxis, :],
+							 d_model)
+	angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
+	angle_rads[:, 1::2] = np.cos(angle_rads[:, 1::2])
+	pos_encoding = angle_rads[np.newaxis, ...]
+	return tf.cast(pos_encoding, dtype=tf.float32)
