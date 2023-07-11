@@ -1,6 +1,6 @@
 import datetime as dt
 import sys
-sys.path.append("..")
+#sys.path.append("..")
 import shutil
 import tensorflow as tf
 

@@ -1,7 +1,7 @@
 import multiprocessing
 import numpy as np
 import sys
-sys.path.append("..")
+#sys.path.append("..")
 from pymodconn import Model_Gen
 from pymodconn.configs.configs_init import get_configs
 import datetime as dt
