@@ -1,10 +1,9 @@
-# pymodconn
-
-## _pymodconn_ : A Python package for developing modular sequence to sequence control oriented neural networks
+# _pymodconn_ : A Python package for developing modular sequence to sequence control-oriented deep neural networks
+*To prevent plagarism, more details will be added here after the paper is published.*
 
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/FIG1.png)
 
-A control-oriented deep neural network (CONN) is a deep neural network (DNN) designed to predict the future behaviour and response of complex dynamic systems, taking into account *Known past data* and *Known future data*. 
+A control-oriented deep neural network (CONN) is a deep neural network designed to predict the future behaviour and response of complex dynamic systems, taking into account *Known past data* and *Known future data*. 
 - *Known past data* includes historical information such as weather data, time information, system dynamics, and control inputs, which are used to train the CONN to understand the relationships between these variables and their effects on the system. 
 - *Known future data* encompasses forecasted weather data, time information, schedules, and most importantly targeted control inputs, representing the expected conditions and desired actions that the system will be subject to in the future. 
 
