@@ -1,5 +1,4 @@
 # _pymodconn_ : A Python package for developing modular sequence to sequence control-oriented deep neural networks
-*To prevent plagarism, more details will be added here after the paper is published.*
 
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/FIG1.png)
 
@@ -8,14 +7,30 @@ A control-oriented deep neural network (CONN) is a deep neural network designed 
 - *Known future data* encompasses forecasted weather data, time information, schedules, and most importantly targeted control inputs, representing the expected conditions and desired actions that the system will be subject to in the future. 
 
 The CONN leverages this information to predict future, i.e., *Unknown future data*, referring to the system dynamics or states that are not yet known. This prediction enables the control system to anticipate changes in the environment and adapt its actions, accordingly, ensuring optimal performance and robustness in spite of uncertainties.
+# Contents
+* [Installation](#installation)
+* [Requirements](#requirements)
+* [Usage and Implementation](#usage-and-implementation)
+* [Configuration file details](#configuration-file-details)
 
-## Instructions
 
-### 1. Install:
+### Installation
+---
+*pymodconn* can be installed using [pip](https://pip.pypa.io/en/stable/), a tool for installing Python packages. To do it, run the following command:
 ```
 pip install pymodconn
 ```
-### 2. Usage:
+### Requirements
+---
+*pymodconn* requires Python >= 3.9.16 or later to run. Note that you should have also the following packages installed in your system:
+- jsonschema==4.17.3
+- keras==2.12.0
+- numpy==1.24.3
+- PyYAML==6.0
+- ruamel.base==1.0.0
+- tensorflow==2.12.0
+### Usage and Implementation
+---
 Download congifuration file from [pymodconn\configs\default_config.yaml]
 
 ```python
@@ -94,12 +109,13 @@ def train_test(MODEL_CONFIG_FILENAME):
 if __name__ == '__main__':
     MultiprocessingWindow(train_test, (['default_config.yaml']))()
 ```
+### Configuration file details
+---
 
 
-## License
+### License
+---
 
 MIT License
 
 **Free Software, Hell Yeah!**
-
-   [pymodconn\configs\default_config.yaml]: <https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/default_config.yaml>
