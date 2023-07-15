@@ -49,7 +49,7 @@ def train_test(MODEL_CONFIG_FILENAME):
 	ident 				= 'test_'
 	current_run_dt 		= ident + str(dt.datetime.now().strftime('%d.%m-%H.%M.%S'))
 
-	# Initialize and build the model using your library
+	# Initialize and build the model
 	model_class = Model_Gen(configs, ident)
 	model_class.build_model()
 
