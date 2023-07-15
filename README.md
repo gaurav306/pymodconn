@@ -16,13 +16,13 @@ The CONN leverages this information to predict future, i.e., *Unknown future dat
 * [Full implementation example - Model developement and training using Keras](#full-implementation-example---model-developement-and-training-using-keras)
 
 
-### Installation
+# Installation
 *pymodconn* can be installed using [pip](https://pip.pypa.io/en/stable/), a tool for installing Python packages. To do it, run the following command:
 ```
 pip install pymodconn
 ```
 
-### Requirements
+# Requirements
 *pymodconn* requires Python >= 3.9.16 or later to run. Note that you should have also the following packages installed in your system:
 - jsonschema==4.17.3
 - keras==2.12.0
@@ -31,8 +31,8 @@ pip install pymodconn
 - ruamel.base==1.0.0
 - tensorflow==2.12.0
 
-### Usage
-#### Step 1: Loading the configurations as a dictionary
+# Usage
+## Step 1: Loading the configurations as a dictionary
 The users can design their CONN using a text-based configuration file. The details of this configuration file is discussed in next section ([Configuration file details](#configuration-file-details)). The configuration file can be loaded as a dictionary for use using [get_configs()](https://github.com/gaurav306/pymodconn/blob/c1daed967501524311dbbe085b986b7f3c356d45/pymodconn/configs/configs_init.py#L24C7-L24C7). User can furthur change contents of configuration dictionary before using it to develop Keras model
 ```python
 from pymodconn.configs.configs_init import get_configs
@@ -45,7 +45,7 @@ configs['known_past_features'] = 2 #Number of features in the past observation w
 configs['known_future_features'] = 3 #Number of features in the future prediction window data
 configs['unknown_future_features'] = 2 #Number of features in the future prediction window data 
 ```
-#### Step 2: Develop Keras model using configurations dictionary
+## Step 2: Develop Keras model using configurations dictionary
 To differentiate model details the user can choose to use a unique indentation. For example this unique identifier string (ident) is created by appending the current time string to a predefined text. This identifier is used to differentiate between multiple runs or cases and for generating unique filenames when saving the model and prediction results.
 
 Finally to develop the Keras model, the [Model_Gen(configs, ident)](https://github.com/gaurav306/pymodconn/blob/c1daed967501524311dbbe085b986b7f3c356d45/pymodconn/model_gen.py#L14C11-L14C11) class is instantiated with the loaded configurations and the current run's identifier. The [build_model()](https://github.com/gaurav306/pymodconn/blob/c1daed967501524311dbbe085b986b7f3c356d45/pymodconn/model_gen.py#L43) method is then called to create the Keras model object.
@@ -67,7 +67,7 @@ model_class.model.evaluate(....)
 model_class.model.save(....)
 ```
 
-### Configuration file details
+# Configuration file details
 
 As discussed in previous section, users can design their CONN using a text-based .yaml file. YAML ("YAML Ain't Markup Language") is a human-readable data serialization format that is commonly used for configuration files due to its simplicity and readability. It facilitates implementation with various network architectures, promotes modularity and enables the reuse of predefined models, thus improving efficiency and reducing coding errors. The approach simplifies hyperparameter tuning, a critical aspect of neural network performance, by isolating these parameters in a configuration file.
 
@@ -77,7 +77,7 @@ The first option creates a template of the configuration file in the current dir
 
 To avoid errors and ensure correct operation, it is recommended that users do not alter the key names or the data types of the values in the key-value pairs within the configuration file. Maintaining this structure is essential for the Python package to function correctly. Following section gives more details of YAML configuration file lin-by-line. 
 
-#### ALL BASIC SETTINGS INDEPENDENT OF MODEL ARCHITECTURE
+## ALL BASIC SETTINGS INDEPENDENT OF MODEL ARCHITECTURE
 ```YAML
 if_model_image: 1
 if_model_summary: 0
@@ -133,7 +133,7 @@ all_layers_dropout: 0.4
 The CONN structure includes an Encoder block processing known past data, and one or more Decoder blocks handling known future data. The Encoder block generates a sequence of encoded states reflecting the temporal structure of past data, and a final state summarizing this data. Each Decoder block receives these outputs; the encoded states serve as a temporal context, while the final encoder state initializes the Decoder block.
 
 
-#### ENCODER SETTINGS
+## ENCODER SETTINGS
 This section of config file is used to list settings used to structure the *Encoder* of the model. 
 
 ```YAML
@@ -191,7 +191,7 @@ encoder:
     - **MHA_head:** Specifies the number of heads in the MHA unit.
     - **IF_NONE_GLUADDNORM_ADDNORM_deep:** Determines the type of residual connection for the deeper layers. Use 0 for Nothing, 1 for an Add and Normalize residual connection with a GLU gate, and 2 for an Add and Normalize residual connection without a GLU gate.
 
-#### DECODER SETTINGS
+## DECODER SETTINGS
 This section of config file is used to list settings used to structure the *Decoder* of the model. 
 
 ```YAML
@@ -313,7 +313,7 @@ decoder:
 
 
 
-### Full implementation example - Model developement and training using Keras
+# Full implementation example - Model developement and training using Keras
 
 Within the same directory as the default_config.yaml file, three additional configuration files are accessible. These files represent CONNs built on three recognized time series prediction mechanisms: RNNs - [CONN_based_on_biLSTMs_with_Bahdanau_attention.yaml](https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/CONN_based_on_biLSTMs_with_Bahdanau_attention.yaml), MHA - [CONN_based_on_MHA.yaml](https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/CONN_based_on_MHA.yaml), and TCN - [CONN_based_on_TCN_with_Bahdanau_attention.yaml](https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/CONN_based_on_TCN_with_Bahdanau_attention.yaml). 
 An implementation example is presented below which develops and tests the three different example model configuration.
@@ -392,7 +392,7 @@ if __name__ == '__main__':
 ```
 Figure below illustrates the schematics of the Keras models generated from these three configuration files.
 ![alt text](https://github.com/gaurav306/pymodconn/blob/master/Readme_images/FIG7.png)
-### License
+# License
 MIT License
 
 
