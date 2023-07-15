@@ -25,7 +25,6 @@ pip install pymodconn
 # Requirements
 *pymodconn* requires Python >= 3.9.16 or later to run. Note that you should have also the following packages installed in your system:
 - jsonschema==4.17.3
-- keras==2.12.0
 - numpy==1.24.3
 - PyYAML==6.0
 - ruamel.base==1.0.0
