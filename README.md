@@ -119,3 +119,5 @@ if __name__ == '__main__':
 MIT License
 
 **Free Software, Hell Yeah!**
+
+   [pymodconn\configs\default_config.yaml]: <https://github.com/gaurav306/pymodconn/blob/master/pymodconn/configs/default_config.yaml>
